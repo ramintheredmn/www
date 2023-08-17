@@ -56,6 +56,7 @@ def extract_selectedUser_data(user_id, time):
 def calculating_moving_average(heart_rates, window_size):  # ramin, added the window size variable
     df_heartrates = pd.DataFrame(heart_rates)
     heart_rates_ma = df_heartrates.rolling(window=window_size).mean()
-    heart_rates_ma[:window_size-1] = heart_rates[:window_size-1]
+    heart_rates_ma.iloc[:window_size-1, 0] = heart_rates[:window_size-1]
+    #heart_rates_ma[:window_size-1] = heart_rates[:window_size-1]
     heart_rates_MA=heart_rates_ma.values.tolist()
     return heart_rates_MA
