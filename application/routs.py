@@ -1,6 +1,7 @@
 import traceback
 from flask import Flask, render_template, request, url_for, redirect, send_from_directory, jsonify, session # importing this session object to access a variable between routs
-from application.database import engine, MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, extract_selectedUser_data
+from application.database import engine
+from application.dataanalyze import MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, extract_selectedUser_data
 from sqlalchemy import text
 from datetime import datetime
 from application import app
