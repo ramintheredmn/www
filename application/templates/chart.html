@@ -46,7 +46,6 @@ function sendDataToServer(userId) {
     xhr.onload = function() {
         if (this.status == 200) {
             console.log('Response from server:', this.responseText);
-            // Handle the server response here if needed
         } else {
             console.error('Request failed with status:', this.status);
         }
