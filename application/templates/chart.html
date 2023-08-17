@@ -27,7 +27,40 @@
     
 
 </form>
+<script>
 
+
+document.getElementById('form_user_id').addEventListener('submit', function(e) {
+    e.preventDefault();  // Prevent traditional form submission
+    
+    const selectedUserId = document.getElementById('userid').value;
+    
+    sendDataToServer(selectedUserId);
+});
+
+function sendDataToServer(userId) {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '{{ url_for('chart') }}', true); 
+    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    
+    xhr.onload = function() {
+        if (this.status == 200) {
+            console.log('Response from server:', this.responseText);
+            // Handle the server response here if needed
+        } else {
+            console.error('Request failed with status:', this.status);
+        }
+    };
+
+    xhr.onerror = function() {
+        console.error('Request failed.');
+    };
+
+    const data = 'user_id=' + encodeURIComponent(userId);
+    xhr.send(data);
+}
+
+</script>
 <p> default MA window size is 5 </p>
 
 
