@@ -1,4 +1,4 @@
-in order to run the app after cloning the repo created a file named "apprun.py" with this contents :
+in order to run the app after cloning the repo create a file named "apprun.py" with this contents :
 
 
 #
