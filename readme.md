@@ -1,4 +1,4 @@
-after cloning the repo created a file named "apprun.py" with this contents :
+in order to run the app after cloning the repo create a file named "apprun.py" with this contents :
 
 
 #
@@ -9,6 +9,6 @@ after cloning the repo created a file named "apprun.py" with this contents :
         app.run(debug=True)
 
 #
-in order to run the app
+
 
 this file will be ignored with commiting.
