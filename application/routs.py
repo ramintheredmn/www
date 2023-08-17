@@ -7,7 +7,7 @@ from datetime import datetime
 from application import app
 from sqlalchemy.orm import sessionmaker
 import pytz
-import json
+
 
 
 
