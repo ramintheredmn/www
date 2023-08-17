@@ -11,8 +11,9 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.gitconfig
 apprun.py
-database.py
+application/database.py
 .Python
 old/
 build/
