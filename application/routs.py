@@ -101,6 +101,20 @@ def receive():
 # def default_chart():
 #     return redirect('/chart/5')
 
+@app.route('/window_size', methods=['POST'])
+def window_size():
+    session['window_size'] = 5
+    if request.method == 'POST':
+        interval = session.get('interval')
+        selected_user_id = session.get('selected_user_id')
+        window_sizee = request.form.get('window_size')
+        session['window_size'] = window_sizee
+
+        if not selected_user_id or not interval:
+            return jsonify({"error": "Please choose user id and time interval first"})
+
+    return jsonify({"window_size": window_sizee})
+
 @app.route('/chart', methods=['GET', 'POST'])
 def chart():
     #get all unique user_ids
@@ -125,8 +139,9 @@ def chart():
         session['selected_user_id'] = None
 
     window_sizee = 5
-    if not session['window_size'] == None:
-        window_sizee = session['window_size']
+    if 'window_size' in session:
+        if not session['window_size'] == None:
+            window_sizee = session['window_size']
 
     return render_template('chart.html', title='chart', selected_user_id=session.get('selected_user_id'), user_ids=user_ids, post_s=asgar, MA_window=window_sizee)
 
@@ -173,17 +188,7 @@ def get_data():
 
 
 
-@app.route('/window_size', methods=['POST'])
-def window_size():
-    interval = session.get('interval')
-    selected_user_id = session.get('selected_user_id')
-    window_sizee = request.form.get('window_size')
-    session['window_size'] = window_sizee
 
-    if not selected_user_id or not interval:
-        return jsonify({"error": "Please choose user id and time interval first"})
-
-    return jsonify({"window_size": window_sizee})
 
 
 @app.route('/data/<int:a>/<username>', methods=['GET'])
