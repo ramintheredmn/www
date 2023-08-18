@@ -27,6 +27,7 @@
     
 
 </form>
+<p id="use"></p>
 <script>
 
 
@@ -45,7 +46,7 @@ function sendDataToServer(userId) {
     
     xhr.onload = function() {
         if (this.status == 200) {
-            console.log('Response from server:', this.responseText);
+            document.getElementById("use").innerHTML = "choosen user id is : " + encodeURIComponent(userId);
         } else {
             console.error('Request failed with status:', this.status);
         }
@@ -160,6 +161,7 @@ function sendDataToServer(userId) {
                 fetch(`/time_interval?interval=${interval}`)
                     .then(response => {
                         if (!response.ok) {
+                            window.alert("choose userID and submit it")
                             throw new Error(`Server responded with status: ${response.status}`);
                         }
                         return response.json();
