@@ -60,15 +60,44 @@ function sendDataToServer(userId) {
 }
 
 </script>
-<p> default MA window size is 5 </p>
+<p id="DMA"> in the text box below enter the MA window size you want now it is {{MA_window}} </p>
 
+<form id="windowSizeForm">
+    <input type="text" name="window_size">
+</form>
+<button id="window_size_submit">Submit</button>
+<script>
+    document.getElementById('window_size_submit').addEventListener('click', function(event) {
+    event.preventDefault();  // Prevent the default form submission
 
+    let formData = new FormData(document.getElementById('windowSizeForm'));
+    fetch('/window_size', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        if (data.error) {
+            alert(data.error);
+        } else {
+            document.getElementById("DMA").innerHTML = " in the text box below enter the MA window size you want, pervius one was {{MA_window}}, now it is : " + data.window_size + " press a time interval again to see the effect"
 
+            
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+</script>
+<br>
 <button id="lastHourButton" type="submit">Last hour</button>
 <button id="lastDayButton" type="submit">Last day</button>
 <button id="lastMonthButton" type="submit">Last month</button>
     
-    <div id="tester" style="height: 800px; width: 100%"></div>
+    <div id="tester" style="height: 100%; width: 100%"></div>
     <script>
 
     window.onload = function() {

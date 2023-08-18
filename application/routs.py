@@ -107,38 +107,28 @@ def chart():
     # window_size=5
     user_ids_ = distinct_userIdExtract_extract_from_table() # calling the funtion to send the user_ids to front in order to select one by user
     user_ids = [user_id_a['USER_ID'] for user_id_a in user_ids_] # appending all the recevied usesr_ids into a list (raw data : {USER_ID : "..."} ---> this list :["....", "...."])
-    # dict_res1 = calculating_moving_average(dict_res, window_size)
-    #user_ids = list(set([data['USER_ID'] for data in dict_res])) # appending all the user ids to a list
+
     user_ids.sort(reverse=False) #sorting 
     
     tehran = pytz.timezone('Asia/Tehran')
     meanHR = None
     # If a specific user_id was chosen, filter the data for that user_id
-    # global selected_user_id
-    # selected_user_id = None
-    # time = 3600
+
     asgar = "Please select User ID, then select a time interval"
     
     if request.method == 'POST':
         
         session['selected_user_id'] = request.form['user_id'] # using the session object in order to access the selected user id between requests
         asgar = "you selected the user id : ", session['selected_user_id']
-        
-        #selected_user_id = request.form.get('user_id')
-        # list_of_last_hour_data_dicts = extract_selectedUser_data(selected_user_id, time)    
-        
-        # timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP'])).astimezone(tehran).strftime('%Y-%m-%d %H:%M:%S') for data in list_of_last_hour_data_dicts]
-        # heart_rates = [data['HEART_RATE'] for data in list_of_last_hour_data_dicts]
-    #heart_rates_mo = [data['ROLLING_MEAN'] for data in filtered_data]
+
     else:
         session['selected_user_id'] = None
-    #     heart_rates_mo=[]
-    # if heart_rates: #ramin, added a numpy func for mean
-        
-    #     NHR = np.array([heart_rates])
-    #     meanHR = NHR.mean()
-    
-    return render_template('chart.html', title='chart', selected_user_id=session.get('selected_user_id'), user_ids=user_ids, post_s=asgar)
+
+    window_sizee = 5
+    if not session['window_size'] == None:
+        window_sizee = session['window_size']
+
+    return render_template('chart.html', title='chart', selected_user_id=session.get('selected_user_id'), user_ids=user_ids, post_s=asgar, MA_window=window_sizee)
 
 # this route is for receving requests from server by using the new route don't need for refreshing the /chart page to send new requests( here requests are time intervals which will be use to extract less data from table)
 @app.route('/time_interval')
@@ -147,7 +137,7 @@ def get_data():
 # to get interval from frot    
     interval = request.args.get('interval') # java script will send this
     selected_user_id = session.get('selected_user_id')
-
+    session['interval'] = interval
     if  selected_user_id == None:
         return jsonify({"error" : "User id not selected"}), 400   # using flask jasinify to send real json to javasctrpt
    
@@ -168,28 +158,32 @@ def get_data():
         data_dicts = extract_selectedUser_data(selected_user_id, time) 
         timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP'])).astimezone(tehran).strftime('%Y-%m-%d %H:%M:%S') for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
-        heart_rates_MA= calculating_moving_average(heart_rates,5)
+        window_sizee = session['window_size']
+        if not window_sizee == None:
+            heart_rates_MA= calculating_moving_average(heart_rates,int(window_sizee))
+        else:
+            heart_rates_MA= calculating_moving_average(heart_rates,5)
+
 
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
-    # if interval == 'hour':
-    #     time = 3600
-    #     list_of_last_hour_data_dicts = extract_selectedUser_data(selected_user_id, time)    
-        
-    #     timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP'])).astimezone(tehran).strftime('%Y-%m-%d %H:%M:%S') for data in list_of_last_hour_data_dicts]
-    #     heart_rates = [data['HEART_RATE'] for data in list_of_last_hour_data_dicts]
-    # elif interval == 'day':
-    #     time = 86400
-    #     list_of_last_hour_data_dicts = extract_selectedUser_data(selected_user_id, time)    
-        
-    #     timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP'])).astimezone(tehran).strftime('%Y-%m-%d %H:%M:%S') for data in list_of_last_hour_data_dicts]
-    #     heart_rates = [data['HEART_RATE'] for data in list_of_last_hour_data_dicts]
-        # Fetch data for last day
-        # Equivalent of "SELECT ... WHERE `timestamp` >= (SELECT MAX(`timestamp`) - 86400 FROM ...)"
 
-    # ... handle other intervals
 
     return jsonify({"timestamps": timestamps, "heart_rates": heart_rates, "heart_rates_MA": heart_rates_MA})
+
+
+
+@app.route('/window_size', methods=['POST'])
+def window_size():
+    interval = session.get('interval')
+    selected_user_id = session.get('selected_user_id')
+    window_sizee = request.form.get('window_size')
+    session['window_size'] = window_sizee
+
+    if not selected_user_id or not interval:
+        return jsonify({"error": "Please choose user id and time interval first"})
+
+    return jsonify({"window_size": window_sizee})
 
 
 @app.route('/data/<int:a>/<username>', methods=['GET'])
