@@ -68,7 +68,7 @@ function sendDataToServer(userId) {
 <button id="lastDayButton" type="submit">Last day</button>
 <button id="lastMonthButton" type="submit">Last month</button>
     
-    <div id="tester" style="height: 900px"></div>
+    <div id="tester" style="height: 800px; width: 100%"></div>
     <script>
 
     window.onload = function() {
@@ -96,6 +96,8 @@ function sendDataToServer(userId) {
                 var data = [heartRateData, heartRateData_MA];
                 var layout = {
                     title: 'Heart Rate Over Time with Moving Average',
+                    autosize: true,
+                    automargin: true,
                     xaxis: {
                         title: 'Time',
                         showgrid: false,
@@ -106,10 +108,17 @@ function sendDataToServer(userId) {
                         title: 'Heart Rate',
                         showline: false,
                     },
+
+                    paper_bgcolor: '#7f7f7f',
+
+                    plot_bgcolor: '#c7c7c7'
+
                 };
+
+                var config = {responsive: true}
     
                 var testplot = document.getElementById('tester');
-                Plotly.react(testplot, data, layout);
+                Plotly.react(testplot, data, layout, config);
             }
     
             function fetchDataForInterval(interval) {
