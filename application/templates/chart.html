@@ -23,42 +23,66 @@
 
     </select>
 
-    <input type="submit" value="Submit" />
+    <!-- <input type="submit" value="Submit" /> -->
     
 
 </form>
 <p id="use"></p>
 <script>
 
+document.getElementById('form_user_id').addEventListener('change', function(event){
+    event.preventDefault();
+    let formdata = new FormData(document.getElementById('form_user_id'));
+    fetch('/user_id', {
+        method: 'POST',
+        body: formdata
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        if (data.error) {
+            alert(data.error);
+        } else {
+            document.getElementById("use").innerHTML = " choosen user id is : " + data.selected_user_id;
 
-document.getElementById('form_user_id').addEventListener('submit', function(e) {
-    e.preventDefault();  // Prevent traditional form submission
-    
-    const selectedUserId = document.getElementById('userid').value;
-    
-    sendDataToServer(selectedUserId);
+            
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 });
 
-function sendDataToServer(userId) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '{{ url_for('chart') }}', true); 
-    xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+
+// document.getElementById('form_user_id').addEventListener('submit', function(e) {
+//     e.preventDefault();  // Prevent traditional form submission
     
-    xhr.onload = function() {
-        if (this.status == 200) {
-            document.getElementById("use").innerHTML = "choosen user id is : " + encodeURIComponent(userId);
-        } else {
-            console.error('Request failed with status:', this.status);
-        }
-    };
+//     const selectedUserId = document.getElementById('userid').value;
+    
+//     sendDataToServer(selectedUserId);
+// });
 
-    xhr.onerror = function() {
-        console.error('Request failed.');
-    };
+// function sendDataToServer(userId) {
+//     const xhr = new XMLHttpRequest();
+//     xhr.open('POST', '{{ url_for('chart') }}', true); 
+//     xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+    
+//     xhr.onload = function() {
+//         if (this.status == 200) {
+//             document.getElementById("use").innerHTML = "choosen user id is : " + encodeURIComponent(userId);
+//         } else {
+//             console.error('Request failed with status:', this.status);
+//         }
+//     };
 
-    const data = 'user_id=' + encodeURIComponent(userId);
-    xhr.send(data);
-}
+//     xhr.onerror = function() {
+//         console.error('Request failed.');
+//     };
+
+//     const data = 'user_id=' + encodeURIComponent(userId);
+//     xhr.send(data);
+// }
 
 </script>
 <p id="DMA"> in the text box below enter the MA window size you want now it is {{MA_window}} </p>
@@ -138,11 +162,9 @@ function sendDataToServer(userId) {
                     yaxis: {
                         title: 'Heart Rate',
                         showline: false,
-                    },
+                    }
 
-                    paper_bgcolor: '#7f7f7f',
 
-                    plot_bgcolor: '#c7c7c7'
 
                 };
 
@@ -161,13 +183,15 @@ function sendDataToServer(userId) {
                 fetch(`/time_interval?interval=${interval}`)
                     .then(response => {
                         if (!response.ok) {
-                            window.alert("choose userID and submit it")
+                            //window.alert("choose userID and submit it")
                             throw new Error(`Server responded with status: ${response.status}`);
                         }
                         return response.json();
                     })
                     .then(data => {
                         console.log('Received data:', data);
+                        var userId = document.getElementById("userid").value;
+                        document.getElementById("selected_user").innerHTML = "showing the result for the selected user id " + userId; + " press a time interval to see the effect" + " change the user id from dropdown menu"
                         var heart_ratees = (data.heart_rates).map(Number)
                         var heart_ratees_MA = (data.heart_rates_MA).map(Number)
                         updateChart(data.timestamps, heart_ratees,heart_ratees_MA);
@@ -199,6 +223,7 @@ function sendDataToServer(userId) {
 
         };
     </script>
+    <p id="selected_user"></p>
        
     <script src="/static/js/plotly-2.25.2.min.js"></script>
 

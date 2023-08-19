@@ -101,6 +101,18 @@ def receive():
 # def default_chart():
 #     return redirect('/chart/5')
 
+@app.route('/user_id', methods=['POST'])
+def user_id():
+    selected_user_id = None
+    if request.method == 'POST':
+        
+        session['selected_user_id'] = request.form.get('user_id') # using the session object in order to access the selected user id between requests
+        selected_user_id = session['selected_user_id']
+
+    else:
+        session['selected_user_id'] = None
+    return jsonify({"selected_user_id": selected_user_id})
+
 @app.route('/window_size', methods=['POST'])
 def window_size():
     session['window_size'] = 5
@@ -129,21 +141,14 @@ def chart():
     # If a specific user_id was chosen, filter the data for that user_id
 
     asgar = "Please select User ID, then select a time interval"
-    
-    if request.method == 'POST':
-        
-        session['selected_user_id'] = request.form['user_id'] # using the session object in order to access the selected user id between requests
-        asgar = "you selected the user id : ", session['selected_user_id']
 
-    else:
-        session['selected_user_id'] = None
 
     window_sizee = 5
     if 'window_size' in session:
         if not session['window_size'] == None:
             window_sizee = session['window_size']
 
-    return render_template('chart.html', title='chart', selected_user_id=session.get('selected_user_id'), user_ids=user_ids, post_s=asgar, MA_window=window_sizee)
+    return render_template('chart.html', title='chart', selected_user_id=session.get('selected_user_id'), user_ids=user_ids, MA_window=window_sizee)
 
 # this route is for receving requests from server by using the new route don't need for refreshing the /chart page to send new requests( here requests are time intervals which will be use to extract less data from table)
 @app.route('/time_interval')
@@ -173,11 +178,16 @@ def get_data():
         data_dicts = extract_selectedUser_data(selected_user_id, time) 
         timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP'])).astimezone(tehran).strftime('%Y-%m-%d %H:%M:%S') for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
-        window_sizee = session['window_size']
-        if not window_sizee == None:
-            heart_rates_MA= calculating_moving_average(heart_rates,int(window_sizee))
+        window_sizee = 5
+        if 'window_size' in session:
+            if not session['window_size'] == None:
+                window_sizee = session['window_size']
         else:
-            heart_rates_MA= calculating_moving_average(heart_rates,5)
+            window_sizee = 5
+        
+        heart_rates_MA= calculating_moving_average(heart_rates,int(window_sizee))
+        
+
 
 
     except Exception as e:
