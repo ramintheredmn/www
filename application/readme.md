@@ -2,17 +2,17 @@ database file is just for connecting to the database which is possible in the se
 
 #
 
-from sqlalchemy import create_engine
+# from sqlalchemy import create_engine
 
-engine = create_engine(
-    "mysql+pymysql://username:password@host/databese?charset=utf8mb4"
-        connect_args={
-                           
-                           # if there is
-                                
-                           
-                       }
-
-)
+# engine = create_engine(
+#    "mysql+pymysql://username:password@host/databese?charset=utf8mb4"
+#        connect_args={
+#                           
+#                           # if there is
+#                                
+#                           
+#                       }
+#
+# )
 #
 
