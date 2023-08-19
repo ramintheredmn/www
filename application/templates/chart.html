@@ -28,6 +28,7 @@
 
 </form>
 <p id="use"></p>
+
 <script>
 
 document.getElementById('form_user_id').addEventListener('change', function(event){
@@ -44,6 +45,7 @@ document.getElementById('form_user_id').addEventListener('change', function(even
             alert(data.error);
         } else {
             document.getElementById("use").innerHTML = " choosen user id is : " + data.selected_user_id;
+
 
             
         }
@@ -118,6 +120,8 @@ document.getElementById('form_user_id').addEventListener('change', function(even
 });
 
 </script>
+
+
 <br>
 <button id="lastHourButton" type="submit">Last hour</button>
 <button id="lastDayButton" type="submit">Last day</button>
@@ -203,27 +207,51 @@ document.getElementById('form_user_id').addEventListener('change', function(even
         //     event.preventDefault();
         //     fetchDataForInterval('hour'); 
         // }
+        
+    //         document.getElementById('form_user_id').addEventListener('change', function(){
     
+    //         fetchDataForInterval('day');
 
+
+
+    // }
+    // )
+    // document.getElementById("time").innerHTML = "By deafualt the time interval is set to last day"
+
+            var interval = 'day'
     
             document.getElementById("lastHourButton").addEventListener("click", function() {
                 fetchDataForInterval('hour');
-            });
+                
+            }
+                    
+            );
     
             document.getElementById("lastDayButton").addEventListener("click", function() {
                 fetchDataForInterval('day');
+                
             });
     
             document.getElementById("lastMonthButton").addEventListener("click", function() {
                 fetchDataForInterval('month');
+                
             });
+
+//             document.getElementById('window_size_submit').addEventListener('click', function() {
+
+//             fetchDataForInterval(interval);
+
+
+// })
             
 
         
 
         };
     </script>
+
     <p id="selected_user"></p>
+    <p id="time"></p>
        
     <script src="/static/js/plotly-2.25.2.min.js"></script>
 

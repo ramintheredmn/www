@@ -101,7 +101,7 @@ def receive():
 # def default_chart():
 #     return redirect('/chart/5')
 
-@app.route('/user_id', methods=['POST'])
+@app.route('/user_id', methods=['POST'])  # a seprate route just for getting the choosen user id 
 def user_id():
     selected_user_id = None
     if request.method == 'POST':
@@ -113,7 +113,7 @@ def user_id():
         session['selected_user_id'] = None
     return jsonify({"selected_user_id": selected_user_id})
 
-@app.route('/window_size', methods=['POST'])
+@app.route('/window_size', methods=['POST']) # a seprate route just for getting the window size
 def window_size():
     session['window_size'] = 5
     if request.method == 'POST':
@@ -127,7 +127,7 @@ def window_size():
 
     return jsonify({"window_size": window_sizee})
 
-@app.route('/chart', methods=['GET', 'POST'])
+@app.route('/chart', methods=['GET', 'POST']) # routing to chart page where all the variables should be availible
 def chart():
     #get all unique user_ids
     # window_size=5
@@ -145,8 +145,8 @@ def chart():
 
     window_sizee = 5
     if 'window_size' in session:
-        if not session['window_size'] == None:
-            window_sizee = session['window_size']
+        
+        window_sizee = session['window_size']
 
     return render_template('chart.html', title='chart', selected_user_id=session.get('selected_user_id'), user_ids=user_ids, MA_window=window_sizee)
 
@@ -180,8 +180,8 @@ def get_data():
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
         window_sizee = 5
         if 'window_size' in session:
-            if not session['window_size'] == None:
-                window_sizee = session['window_size']
+            
+            window_sizee = session['window_size']
         else:
             window_sizee = 5
         
