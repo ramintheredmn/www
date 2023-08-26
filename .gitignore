@@ -1,3 +1,5 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -13,7 +15,7 @@ __pycache__/
 # Distribution / packaging
 .gitconfig
 apprun.py
-application/database.py
+api/database.py
 .Python
 old/
 build/
@@ -169,3 +171,37 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 application/database.py
+
+# dependencies
+client/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+client/.next/
+client/out/
+
+# production
+client/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
