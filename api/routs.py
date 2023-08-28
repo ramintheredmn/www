@@ -12,6 +12,10 @@ import pytz
 def index():
 	return app.send_static_file('index.html')
 
+@app.route('/chartpage')
+def chart():
+	return app.send_static_file('chartpage.html')
+
 @app.route('/about')
 def about():
 	return app.send_static_file('about.html')

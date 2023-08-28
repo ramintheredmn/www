@@ -4,9 +4,13 @@ import { useEffect, useState, useRef } from "react";
 import {BiChevronDown} from 'react-icons/bi'
 import {AiOutlineSearch} from 'react-icons/ai'
 import axios from 'axios';
+import 'date-fns'
+import adapter from 'chartjs-adapter-date-fns';
 import {
   Chart as ChartJS,
+  
   CategoryScale,
+  TimeScale,
   LinearScale,
   PointElement,
   LineElement,
@@ -17,62 +21,83 @@ import {
 import { Line } from 'react-chartjs-2';
 
 
+ChartJS.register(
+  adapter,
+  TimeScale,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 
 
+function HRchart(props) {
 
-
-
-
-
-
-function Chart(probs) {
-
-  ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-  );
   
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
+    const options = {
+      responsive: true,
+      scales: {
+        x: {
+          type: 'time',
+          adapters: {
+            date: {
+              parser: 'yyyy-MM-dd HH:mm:ss', // or any format your timestamp is in
+            },
+          },
+          time: {
+            unit: 'minute',
+            displayFormats: {
+              minute: 'HH:mm', // or 'mm:ss' or any format you want
+            },
+          },
+          title: {
+            display: true,
+            text: 'Time (minutes)'
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Heart Rate'
+          }
+        }
       },
-      title: {
-        display: true,
-        text: 'Chart.js Line Chart',
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        title: {
+          display: true,
+          text: 'Heart Rate over Time',
+        },
       },
-    },
-  };
+    };
+  
+    const labels = props.userTimestamp.map(ts => new adapter(ts));
+    const data = {
+      labels,
+      datasets: [
+        {
+          label: 'Heart Rate',
+          data: props.userHeartRate,
+          borderColor: 'white',
+          backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        }
+      ],
+    };
+  
+    return (
+      <div>
+        <Line options={options} data={data} />
+      </div>
+    );
+  }
+  
 
-  const labels = probs.userTimestamp;
-
-const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Dataset 1',
-      data: probs.userHeartRate,
-      borderColor: 'white',
-      
-    }
- 
-  ],
-};
-
-
-  return(
-    <div>
-    <Line options={options} data={data} />
-    </div>
-  )
-}
 
 
 
@@ -85,7 +110,7 @@ const data = {
             <div className="drawer-content">
             <div className=" bg-base-100 content-center justify-center self-center">
             <label htmlFor="my-drawer" className=" self-center content-center btn btn-primary drawer-button">Open drawer</label>
-            <div><Chart userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
+            <div><HRchart userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
             </div>
             </div>
             <div className="drawer-side">

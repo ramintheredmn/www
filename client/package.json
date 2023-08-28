@@ -12,12 +12,14 @@
     "autoprefixer": "10.4.15",
     "axios": "^1.4.0",
     "chart.js": "^4.4.0",
+    "chartjs-adapter-dayjs-4": "^1.0.4",
+    "chartjs-adapter-moment": "^1.0.1",
+    "date-fns": "^2.30.0",
+    "dayjs": "^1.11.9",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
-    "highcharts-react-official": "^3.2.0",
-    "lightweight-charts": "^4.0.1",
+    "moment": "^2.29.4",
     "next": "13.4.19",
-    "plotly.js": "^2.26.0",
     "postcss": "8.4.28",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
@@ -25,10 +27,10 @@
     "react-icons": "^4.10.1",
     "react-plotly.js": "^2.6.0",
     "react-sizeme": "^3.0.2",
-    "tailwindcss": "3.3.3",
-    "victory": "^36.6.11"
+    "tailwindcss": "3.3.3"
   },
   "devDependencies": {
+    "chartjs-adapter-date-fns": "^3.0.0",
     "daisyui": "^3.6.3"
   }
 }
