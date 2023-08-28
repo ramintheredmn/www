@@ -1,116 +1,77 @@
 import Navabr from "./components/navbar"
-import React from "react";
+import React, {PureComponent} from "react";
 import { useEffect, useState, useRef } from "react";
 import {BiChevronDown} from 'react-icons/bi'
 import {AiOutlineSearch} from 'react-icons/ai'
 import axios from 'axios';
-import 'date-fns'
-import adapter from 'chartjs-adapter-date-fns';
-import {
-  Chart as ChartJS,
-  
-  CategoryScale,
-  TimeScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import dynamic from 'next/dynamic'
 
-
-ChartJS.register(
-  adapter,
-  TimeScale,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+const DynamicApexChart = dynamic(() => import ('react-apexcharts'), { ssr: false });
 
 
 
-function HRchart(props) {
+function Chart(probs) {
 
-  
-    const options = {
-      responsive: true,
-      scales: {
-        x: {
-          type: 'time',
-          adapters: {
-            date: {
-              parser: 'yyyy-MM-dd HH:mm:ss', // or any format your timestamp is in
-            },
-          },
-          time: {
-            unit: 'minute',
-            displayFormats: {
-              minute: 'HH:mm', // or 'mm:ss' or any format you want
-            },
-          },
-          title: {
-            display: true,
-            text: 'Time (minutes)'
-          }
-        },
-        y: {
-          title: {
-            display: true,
-            text: 'Heart Rate'
-          }
-        }
+  let state = {
+    series: [{
+      name: 'series1',
+      data: probs.userHeartRate
+    }],
+    options: {
+      chart: {
+        
+        type: 'line'
       },
-      plugins: {
-        legend: {
-          position: 'top',
-        },
-        title: {
-          display: true,
-          text: 'Heart Rate over Time',
-        },
+      dataLabels: {
+        enabled: false
       },
-    };
-  
-    const labels = props.userTimestamp.map(ts => new adapter(ts));
-    const data = {
-      labels,
-      datasets: [
-        {
-          label: 'Heart Rate',
-          data: props.userHeartRate,
-          borderColor: 'white',
-          backgroundColor: 'rgba(255, 99, 132, 0.5)',
-        }
-      ],
-    };
-  
-    return (
-      <div>
-        <Line options={options} data={data} />
-      </div>
-    );
+      stroke: {
+        curve: 'straight'
+      },
+
+      xaxis: {
+        type: 'datetime',
+        categories: probs.userTimestamp
+      },
+      theme: {
+        palette: 'palette3' // upto palette10
+      },
+      toolbar: {
+        fill: "black"
+      }
+
+      
+
+    },
+
   }
-  
+
+
+
+  return(
+    <div>
+      {(typeof window !== 'undefined') &&
+        <DynamicApexChart options={state.options} series={state.series} type="area" height={350} />
+     }
+
+    </div>
+  )
+}
+
 
 
 
 
   function Sidebar(props) {
     const [userHeartRate, setUserHeartRate] = useState([]);
-    const [userTimestamp, setUserTimestamp] = useState([])
+    const [userTimestamp, setUserTimestamp] = useState([]);
     return(
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
-            <div className=" bg-base-100 content-center justify-center self-center">
-            <label htmlFor="my-drawer" className=" self-center content-center btn btn-primary drawer-button">Open drawer</label>
-            <div><HRchart userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
+            <div className=" bg-base-100">
+            <label htmlFor="my-drawer" className=" btn btn-primary drawer-button">Open drawer</label>
+            <div className=" bg-base-200"><Chart userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
             </div>
             </div>
             <div className="drawer-side">
@@ -143,10 +104,10 @@ function UserIdDropDown ({ setUserHeartRate, setUserTimestamp }) {
         const user_data = res.data;
   
         console.log(user_data);
-        // const formattedData = user_data.heart_rates.map((value, index) => {
-        //   return { time: user_data.timestamps[index], value: value };
-        // });
-        setUserHeartRate(user_data['heart_rates']);
+        const formattedData = user_data.heart_rates.map((value, index) => {
+          return { x: user_data.timestamps[index], y: value };
+        });
+        setUserHeartRate(formattedData);
         setUserTimestamp(user_data['timestamps']);
       } catch (error) {
         console.log('Error : ', error);
@@ -243,7 +204,8 @@ function Chartpage(){
     <>
     
     <Navabr title="Chart" />
-    <Sidebar />
+    <div className="w-full h-full"><Sidebar /></div>
+    
 
 
     </>
