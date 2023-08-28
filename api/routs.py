@@ -12,6 +12,10 @@ import pytz
 def index():
 	return app.send_static_file('index.html')
 
+@app.route('/about')
+def about():
+	return app.send_static_file('about.html')
+
 @app.route('/api/useridlist')
 def test_next():
     user_ids_ = distinct_userIdExtract_extract_from_table()
