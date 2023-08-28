@@ -14,7 +14,6 @@ import HighchartsReact from 'highcharts-react-official'
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
 
-// ... rest of your code, classes, and functions
 
 class Chart extends React.Component {
   render() {
