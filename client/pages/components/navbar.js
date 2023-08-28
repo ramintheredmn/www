@@ -1,4 +1,19 @@
+import { useRouter } from "next/router";
+
 function Navabr(probs) {
+    const router = useRouter();
+    const handleClick = (e, path) => {
+        if (path === "/about") {
+          router.push(path);
+        }
+        if (path === "/chartpage") {
+          console.log("I clicked on the Posts Page");
+          router.push(path)
+        }
+        if (path === "/") {
+            router.push(path);
+          }
+      };
     return (
         <div class="navbar bg-base-100">
             <div class="navbar-start">
@@ -7,10 +22,10 @@ function Navabr(probs) {
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
                     </label>
                     <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                        <li><a>Homepage</a></li>
-                        <li><a>Chart Demo</a></li>
+                        <li><a onClick={(e) => handleClick(e, "/")}>Homepage</a></li>
+                        <li><a onClick={(e) => handleClick(e, "/chartpage")}>Chart Demo</a></li>
                         <li><a>Login</a></li>
-                        <li><a>About</a></li>
+                        <li><a onClick={(e) => handleClick(e, "/about")}>About</a></li>
                     </ul>
                 </div>
             </div>
