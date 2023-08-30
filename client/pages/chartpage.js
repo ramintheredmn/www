@@ -15,13 +15,16 @@ function Chart(probs) {
 
   let state = {
     series: [{
-      name: 'series1',
+      name: 'Heart Rate',
       data: probs.userHeartRate
-    }],
+    }, {
+    name: 'Moving average',
+    data: probs.userHeartRateMA
+    }
+  ],
     options: {
       chart: {
-        foreColor: 'black',
-
+        
         height: '100%',
         parentHeightOffset: 15,
         type: 'line'
@@ -44,10 +47,17 @@ function Chart(probs) {
           show: false
         }
       },
-
-      toolbar: {
-        fill: "black"
-      },
+      theme: {
+        mode: 'dark', 
+        fill: 'black',
+        palette: 'palette4', 
+        monochrome: {
+            enabled: false,
+            color: 'black',
+            shadeTo: 'light',
+            shadeIntensity: 0.65
+        },
+    },
       tooltip: {
         x: {
           format: "dd MMM yyyy HH:mm"
@@ -72,19 +82,6 @@ function Chart(probs) {
   )
 }
 
-function Window_size({setInterval}) {
-  
-  return(
-    <div className="w-70 join">
-      <input
-       
-      className=" flex w-70 input input-bordered join-item" placeholder="Enter window size" />
-      <button 
-      onClick={(e) => setInterval(e.target.value)}
-      className="btn join-item rounded-r-full">Submit</button>
-    </div>
-  )
-}
 
 
 
@@ -93,24 +90,25 @@ function Window_size({setInterval}) {
   function Sidebar(props) {
     const [userHeartRate, setUserHeartRate] = useState([]);
     const [userTimestamp, setUserTimestamp] = useState([]);
-    const [interval, setInterval] = useState("day")
+    const [userHeartRateMA, setUserHeartRateMA] = useState([]);
+
     return(
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
             <div className=" bg-base-100">
             
-            <div className=" mt-3 bg-white"><Chart userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
+            <div className="bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
             <label htmlFor="my-drawer" className="  w-3 btn btn-primary"><figure className="w-3 h-3"><BiChevronRight /></figure></label>
             
             </div>
             </div>
             <div className="drawer-side">
                 <label htmlFor="my-drawer" className="drawer-overlay"></label>
-                <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+                <ul className="menu p-1 w-70 min-h-full bg-base-200 text-base-content">
                     
-                  <li><a><UserIdDropDown setUserHeartRate={setUserHeartRate} setUserTimestamp={setUserTimestamp} interval={interval} /></a></li>
-                  <div className="w-70 bg-base-200"><Window_size setinterval={setInterval} /></div>
+                  <li><a><UserIdDropDown setUserHeartRateMA={setUserHeartRateMA} setUserHeartRate={setUserHeartRate} setUserTimestamp={setUserTimestamp} /></a></li>
+                  <div className="w-70 bg-base-200"></div>
 
 
                 </ul>
@@ -122,25 +120,33 @@ function Window_size({setInterval}) {
 
 
 
-function UserIdDropDown ({ setUserHeartRate, setUserTimestamp, interval}) {
+function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp}) {
     const [userids, setUserids] = useState(null)
     const [inputValue, setInputValue] = useState("")
     const [selected, setSelected] = useState("")
     const [open, setOpen] = useState(false)
+    const [windowsize, setWindow] = useState('5')
+    const [windowinputValue, setWindowInputValue] = useState(windowsize);
+
     
   
     
-    const fetchUserData = async (selected) => {
+    const fetchUserData = async (selected, windowsize) => {
       try {
-        const res = await axios.get(`/api/time_interval?interval=${interval}&userid=${selected}`);
+        const res = await axios.get(`/api/time_interval?interval=day&userid=${selected}&windowsize=${windowsize}`);
         const user_data = res.data;
   
         console.log(user_data);
+        console.log(windowsize)
         const formattedData = user_data.heart_rates.map((value, index) => {
+          return { x: user_data.timestamps[index], y: value };
+        });
+        const formattedDataMa = user_data.heart_rates_MA.map((value, index) => {
           return { x: user_data.timestamps[index], y: value };
         });
         setUserHeartRate(formattedData);
         setUserTimestamp(user_data['timestamps']);
+        setUserHeartRateMA(formattedDataMa)
       } catch (error) {
         console.log('Error : ', error);
       }
@@ -183,9 +189,9 @@ function UserIdDropDown ({ setUserHeartRate, setUserTimestamp, interval}) {
     useEffect(() => {
       if (selected) {
           sendData(selected);
-          fetchUserData(selected);
+          fetchUserData(selected, windowsize);
       }
-  }, [selected]);
+  }, [selected, windowsize]);
   
     return (
       <div className='w-75 font-medium h-85'>
@@ -223,6 +229,23 @@ function UserIdDropDown ({ setUserHeartRate, setUserTimestamp, interval}) {
                 }
                 
               </ul>
+             
+
+
+              <div className="w-70 join">
+                <input
+                  value={windowinputValue}
+                  onChange={(e) => setWindowInputValue(e.target.value)}
+                  className="flex w-70 input input-bordered join-item"
+                  placeholder="Enter window size"
+                />
+                <button
+                  onClick={() => setWindow(windowinputValue)}
+                  className="btn join-item rounded-r-full"
+                >
+                  Submit
+                </button>
+              </div>
             </div>
       
     )
@@ -232,10 +255,17 @@ function UserIdDropDown ({ setUserHeartRate, setUserTimestamp, interval}) {
 
 function Chartpage(){
 
+  const [theme, setTheme] = useState('light')
+
+
+  useEffect(() => {
+    document.querySelector('html').setAttribute('data-theme', theme);
+  }, [theme]);
+
   return (
     <>
-    <div className="bg-base-100">
-    <Navabr title="Chart" />
+    <div className="">
+    <Navabr title="Chart" setTeme={setTheme} />
     <div className="w-full h-full"><Sidebar /></div>
     <Footer />
     </div>
