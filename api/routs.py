@@ -73,7 +73,7 @@ session_dta = Session()
 
     # this is the raw data that client sends
 
-@app.route('/receive', methods=['POST'])
+@app.route('/receive', methods=['GET', 'POST'])
 def receive():
 
     try:
