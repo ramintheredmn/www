@@ -1,10 +1,11 @@
 import Navabr from "./components/navbar"
 import React, {PureComponent} from "react";
 import { useEffect, useState, useRef } from "react";
-import {BiChevronDown} from 'react-icons/bi'
+import {BiChevronDown, BiChevronRight} from 'react-icons/bi'
 import {AiOutlineSearch} from 'react-icons/ai'
 import axios from 'axios';
 import dynamic from 'next/dynamic'
+import Footer from "./components/footer";
 
 const DynamicApexChart = dynamic(() => import ('react-apexcharts'), { ssr: false });
 
@@ -19,7 +20,10 @@ function Chart(probs) {
     }],
     options: {
       chart: {
-        
+        foreColor: 'black',
+
+        height: '100%',
+        parentHeightOffset: 15,
         type: 'line'
       },
       dataLabels: {
@@ -33,9 +37,7 @@ function Chart(probs) {
         type: 'datetime',
         categories: probs.userTimestamp
       },
-      theme: {
-        palette: 'palette3' // upto palette10
-      },
+
       toolbar: {
         fill: "black"
       }
@@ -70,8 +72,10 @@ function Chart(probs) {
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
             <div className="drawer-content">
             <div className=" bg-base-100">
-            <label htmlFor="my-drawer" className=" btn btn-primary drawer-button">Open drawer</label>
-            <div className=" bg-base-200"><Chart userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
+            
+            <div className=" mt-3 bg-white"><Chart userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
+            <label htmlFor="my-drawer" className="  w-3 btn btn-primary"><figure className="w-3 h-3"><BiChevronRight /></figure></label>
+            
             </div>
             </div>
             <div className="drawer-side">
@@ -202,10 +206,11 @@ function Chartpage(){
 
   return (
     <>
-    
+    <div className="bg-base-100">
     <Navabr title="Chart" />
     <div className="w-full h-full"><Sidebar /></div>
-    
+    <Footer />
+    </div>
 
 
     </>

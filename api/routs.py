@@ -176,6 +176,7 @@ def get_data():
     interval = request.args.get('interval') # java script will send this
     selected_user_id = session.get('selected_user_id')
     selected_user_id = request.args.get('userid')
+    entered_window_size = request.args.get('window_size')
     session['interval'] = interval
     if  selected_user_id == None:
         return jsonify({"error" : "User id not selected"}), 400   # using flask jasinify to send real json to javasctrpt
@@ -201,6 +202,8 @@ def get_data():
         if 'window_size' in session:
             
             window_sizee = session['window_size']
+        elif entered_window_size:
+             window_sizee = entered_window_size
         else:
             window_sizee = 5
         
