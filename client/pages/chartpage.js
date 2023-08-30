@@ -30,17 +30,29 @@ function Chart(probs) {
         enabled: false
       },
       stroke: {
-        curve: 'straight'
+        curve: "smooth",
+        width: 3
       },
 
       xaxis: {
-        type: 'datetime',
-        categories: probs.userTimestamp
+        
+        type: "datetime",
+        axisBorder: {
+          show: false
+        },
+        axisTicks: {
+          show: false
+        }
       },
 
       toolbar: {
         fill: "black"
-      }
+      },
+      tooltip: {
+        x: {
+          format: "dd MMM yyyy HH:mm"
+        },
+      },
 
       
 
@@ -60,6 +72,20 @@ function Chart(probs) {
   )
 }
 
+function Window_size({setInterval}) {
+  
+  return(
+    <div className="w-70 join">
+      <input
+       
+      className=" flex w-70 input input-bordered join-item" placeholder="Enter window size" />
+      <button 
+      onClick={(e) => setInterval(e.target.value)}
+      className="btn join-item rounded-r-full">Submit</button>
+    </div>
+  )
+}
+
 
 
 
@@ -67,6 +93,7 @@ function Chart(probs) {
   function Sidebar(props) {
     const [userHeartRate, setUserHeartRate] = useState([]);
     const [userTimestamp, setUserTimestamp] = useState([]);
+    const [interval, setInterval] = useState("day")
     return(
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" />
@@ -82,7 +109,8 @@ function Chart(probs) {
                 <label htmlFor="my-drawer" className="drawer-overlay"></label>
                 <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
                     
-                  <li><a><UserIdDropDown setUserHeartRate={setUserHeartRate} setUserTimestamp={setUserTimestamp} /></a></li>
+                  <li><a><UserIdDropDown setUserHeartRate={setUserHeartRate} setUserTimestamp={setUserTimestamp} interval={interval} /></a></li>
+                  <div className="w-70 bg-base-200"><Window_size setinterval={setInterval} /></div>
 
 
                 </ul>
@@ -94,7 +122,7 @@ function Chart(probs) {
 
 
 
-function UserIdDropDown ({ setUserHeartRate, setUserTimestamp }) {
+function UserIdDropDown ({ setUserHeartRate, setUserTimestamp, interval}) {
     const [userids, setUserids] = useState(null)
     const [inputValue, setInputValue] = useState("")
     const [selected, setSelected] = useState("")
@@ -104,7 +132,7 @@ function UserIdDropDown ({ setUserHeartRate, setUserTimestamp }) {
     
     const fetchUserData = async (selected) => {
       try {
-        const res = await axios.get(`/api/time_interval?interval=day&userid=${selected}`);
+        const res = await axios.get(`/api/time_interval?interval=${interval}&userid=${selected}`);
         const user_data = res.data;
   
         console.log(user_data);
