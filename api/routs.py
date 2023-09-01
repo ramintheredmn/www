@@ -196,7 +196,7 @@ def get_data():
 
     try:
         data_dicts = extract_selectedUser_data(selected_user_id, time)
-        timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP']) + 3.5*60*60).strftime('%Y-%m-%d %H:%M:%S') for data in data_dicts]
+        timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP']) + 2.5*60*60).strftime('%Y-%m-%d %H:%M:%S') for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
         window_sizee = 5
         if 'window_size' in session:
