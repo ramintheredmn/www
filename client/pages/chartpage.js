@@ -94,13 +94,13 @@ function Chart(probs) {
 
     return(
         <div className="drawer">
-            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+            <input id="my-drawer" type="checkbox" className="drawer-toggle flex items-center" />
             <div className="drawer-content">
-            <div className=" bg-base-100">
-            
-            <div className="bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
-            <label htmlFor="my-drawer" className="  w-3 btn btn-primary"><figure className="w-3 h-3"><BiChevronRight /></figure></label>
-            
+            <div className="bg-base-100">
+            <div className="flex flex-row">
+              <div className=" basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
+              <label htmlFor="my-drawer" className=" basis-3 place-items-start w-3 btn btn-secondary"><figure className="flex items-center"><BiChevronRight size={40} /></figure></label>
+            </div>
             </div>
             </div>
             <div className="drawer-side">
