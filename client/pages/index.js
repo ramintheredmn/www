@@ -3,9 +3,9 @@ import { list } from 'postcss';
 import { data } from 'autoprefixer';
 import { useEffect, useState, useRef } from 'react';
 import React from 'react';
-import Footer from './components/footer';
+import Footer from '../components/footer';
 
-import Navabr from './components/navbar';
+import Navabr from '../components/navbar';
 
 
 export default function Home() {

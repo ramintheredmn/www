@@ -1,17 +1,18 @@
-import Navabr from "./components/navbar"
-import React, {PureComponent} from "react";
-import { useEffect, useState, useRef } from "react";
+import Navabr from "../components/navbar"
+
+import React, { useEffect, useState, useRef } from "react";
 import {BiChevronDown, BiChevronRight} from 'react-icons/bi'
 import {AiOutlineSearch} from 'react-icons/ai'
 import axios from 'axios';
 import dynamic from 'next/dynamic'
-import Footer from "./components/footer";
+
 
 const DynamicApexChart = dynamic(() => import ('react-apexcharts'), { ssr: false });
 
 
 
 function Chart(probs) {
+
 
   let state = {
     series: [{
@@ -24,8 +25,42 @@ function Chart(probs) {
   ],
     options: {
       chart: {
+        toolbar: {
+          show: probs.toolbarsat,
+          offsetX: 0,
+          offsetY: 0,
+          tools: {
+            download: true,
+            selection: true,
+            zoom: true,
+            zoomin: true,
+            zoomout: true,
+            pan: true,
+            reset: true | '<img src="/static/icons/reset.png" width="20">',
+            customIcons: []
+          },
+          export: {
+            csv: {
+              filename: undefined,
+              columnDelimiter: ',',
+              headerCategory: 'category',
+              headerValue: 'value',
+              dateFormatter(timestamp) {
+                return new Date(timestamp).toDateString()
+              }
+            },
+            svg: {
+              filename: undefined,
+            },
+            png: {
+              filename: undefined,
+            }
+          },
+          autoSelected: 'zoom' 
+        },
         
-        height: '100%',
+        
+        
         parentHeightOffset: 15,
         type: 'line'
       },
@@ -50,7 +85,7 @@ function Chart(probs) {
       theme: {
         mode: 'dark', 
         fill: 'black',
-        palette: 'palette4', 
+        palette: 'palette5', 
         monochrome: {
             enabled: false,
             color: 'black',
@@ -73,12 +108,12 @@ function Chart(probs) {
 
 
   return(
-    <div>
+    <div className=" h-[80vh]">
       {(typeof window !== 'undefined') &&
-        <DynamicApexChart options={state.options} series={state.series} type="area" height={350} />
+        <DynamicApexChart options={state.options} series={state.series} height={'100%'} />
      }
-
-    </div>
+</div>
+    
   )
 }
 
@@ -91,23 +126,36 @@ function Chart(probs) {
     const [userHeartRate, setUserHeartRate] = useState([]);
     const [userTimestamp, setUserTimestamp] = useState([]);
     const [userHeartRateMA, setUserHeartRateMA] = useState([]);
+    const [side, setSide] = useState({
+      open: "checked",
+      
+    })
+    const [toolbar, setToolbar] = useState(true)
+
+    let checked = side.open
 
     return(
         <div className="drawer">
-            <input id="my-drawer" type="checkbox" className="drawer-toggle flex items-center" />
+            <input id="my-drawer" type="checkbox" className="drawer-toggle" checked={checked} />
             <div className="drawer-content">
             <div className="bg-base-100">
-            <div className="flex flex-row">
-              <div className=" basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} /></div>
-              <label htmlFor="my-drawer" className=" basis-3 place-items-start w-3 btn btn-secondary"><figure className="flex items-center"><BiChevronRight size={40} /></figure></label>
-            </div>
+
+              <div className="object-contain basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} toolbarsat={toolbar} /></div>
+              <label htmlFor="my-drawer" className=" basis-3 place-items-start w-3 btn btn-secondary"><figure onClick={() => {
+                 setSide({open: "open"})
+                 setToolbar(false)
+                 }} className="flex items-center"><BiChevronRight size={40} /></figure></label>
+              
             </div>
             </div>
             <div className="drawer-side">
-                <label htmlFor="my-drawer" className="drawer-overlay"></label>
+                <label onClick={() => {
+                  setSide({open: ""})
+                  setToolbar(true)
+                  }} htmlFor="my-drawer" className=" drawer-overlay"></label>
                 <ul className="menu p-1 w-70 min-h-full bg-base-200 text-base-content">
                     
-                  <li><a><UserIdDropDown setUserHeartRateMA={setUserHeartRateMA} setUserHeartRate={setUserHeartRate} setUserTimestamp={setUserTimestamp} /></a></li>
+                  <li><a><UserIdDropDown setUserHeartRateMA={setUserHeartRateMA} setUserHeartRate={setUserHeartRate} setUserTimestamp={setUserTimestamp} setside={setSide} setToolbar={setToolbar} /></a></li>
                   <div className="w-70 bg-base-200"></div>
 
 
@@ -120,7 +168,7 @@ function Chart(probs) {
 
 
 
-function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp}) {
+function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp, setside, setToolbar}) {
     const [userids, setUserids] = useState(null)
     const [inputValue, setInputValue] = useState("")
     const [selected, setSelected] = useState("")
@@ -194,7 +242,7 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
   }, [selected, windowsize]);
   
     return (
-      <div className='w-75 font-medium h-85'>
+      <div className='w-[20hv] font-medium'>
               <div
               onClick={()=> setOpen(!open)}
               className={`bg-white text-gray-900 w-full h-full p-2 flex items-center justify-between rounded ${!selected && "text-gray-700"}`}>
@@ -220,6 +268,10 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
                     onClick={() => {
                       setSelected(userid !== selected && userid)
                       setOpen(false)
+                      setside({
+                       open: ""
+                      })
+                      setToolbar(true)
                     }}
                     className={`text-black p-2 text-sm hover:bg-sky-600 hover:text-white
                     ${userid?.startsWith(inputValue) ? "block" : "hidden"}`}>
@@ -232,7 +284,7 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
              
 
 
-              <div className="w-70 join">
+              <div className="mt-3 w-70 join">
                 <input
                   value={windowinputValue}
                   onChange={(e) => setWindowInputValue(e.target.value)}
@@ -246,10 +298,52 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
                   Submit
                 </button>
               </div>
+
+              <div className="mt-3 p-2"><DateRangePicker setSide={setside} /></div>
             </div>
       
     )
   }
+
+  const DateRangePicker = ({setSide}) => {
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+  
+    const handleStartDateChange = (e) => {
+      setStartDate(e.target.value);
+      if (new Date(endDate) < new Date(e.target.value)) {
+        setEndDate("");
+      }
+    };
+  
+    return (
+      <div>
+        <label>
+          Start Date:
+          <input
+            type="date"
+            value={startDate}
+            onChange={handleStartDateChange}
+          />
+        </label>
+  
+        <label>
+          End Date:
+          <input
+            type="date"
+            value={endDate}
+            min={startDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </label>
+        <div className="mt-3">
+        <button className="btn btn-warning"
+        onClick={()=> setSide({
+          open: ""
+        })}>Close</button></div>
+      </div>
+    );
+  };
 
 
 
@@ -267,7 +361,7 @@ function Chartpage(){
     <div className="">
     <Navabr title="Chart" setTeme={setTheme} />
     <div className="w-full h-full"><Sidebar /></div>
-    <Footer />
+
     </div>
 
 
