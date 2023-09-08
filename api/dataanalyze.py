@@ -3,6 +3,21 @@ from sqlalchemy import Column, Integer, String, DateTime, text
 from sqlalchemy.ext.declarative import declarative_base
 import numpy as np
 import pandas as pd
+from sqlalchemy import func  
+
+def get_latest_timestamp(user_id):
+    query = text('''
+        SELECT MAX(TIMESTAMP) AS maxTimestamp, MIN(TIMESTAMP) AS minTimestamp
+        FROM MI_BAND_ACTIVITY_SAMPLE
+        WHERE USER_ID = :user_id;
+    ''')
+    
+
+    with engine.connect() as conn:
+        result = conn.execute(query, {'user_id': user_id}).fetchone()
+        
+
+    return result
 
 
 
@@ -42,14 +57,36 @@ def extract_selectedUser_data(user_id, time):
                  where USER_ID = :user_id
         );
     ''')
-
     with engine.connect() as conn:
+        # if startdate and enddate:
+        #     resultall = conn.execute(query_2, {'user_id': user_id, 'start_date': startdate, 'end_date': enddate})
+        # else:
         resultall = conn.execute(query, {'user_id':user_id, 'time':time})
+
         res = resultall.fetchall()
         
         dict_data = [row._asdict() for row in res]
 
     return dict_data
+
+def extract_selected_userid_data_withDates (userid, startDate, endDate):
+
+    query_2 = text('''
+        SELECT DISTINCT TIMESTAMP, HEART_RATE 
+        FROM MI_BAND_ACTIVITY_SAMPLE 
+        WHERE USER_ID = :user_id
+        AND TIMESTAMP BETWEEN :start_date AND :end_date;
+    ''')
+    with engine.connect() as conn:
+
+        resultall = conn.execute(query_2, {'user_id':userid, 'start_date': startDate, 'end_date':endDate})
+        res = resultall.fetchall()
+        
+        dict_data = [row._asdict() for row in res]
+
+    return dict_data
+    
+
 
 
 # function for moving average  

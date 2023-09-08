@@ -1,7 +1,7 @@
 import traceback
 from flask import Flask, render_template, request, url_for, redirect, send_from_directory, jsonify, session # importing this session object to access a variable between routs
 from api.database import engine
-from api.dataanalyze import MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, extract_selectedUser_data
+from api.dataanalyze import MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, extract_selectedUser_data, get_latest_timestamp,extract_selected_userid_data_withDates
 from sqlalchemy import text
 from datetime import datetime
 from api import app
@@ -26,14 +26,6 @@ def test_next():
     user_ids = [user_id_a['USER_ID'] for user_id_a in user_ids_] # appending all the recevied usesr_ids into a list (raw data : {USER_ID : "..."} ---> this list :["....", "...."])
 
     return jsonify({"user_ids" : user_ids})
-                    
-
-# @app.route('/', methods=['GET'])
-# def index():
-#     return render_template('index.html')
-
-
-
 
 Session = sessionmaker(bind=engine)
 session_dta = Session()
@@ -107,16 +99,6 @@ def receive():
         session_dta.rollback() # Rollback the changes on error
         return f'An error occurred while processing the data: {str(e)}', 500
     
-    # data extraction from table, whenever the func is called
-
-
-
-
-
-# routing to chart page
-# @app.route('/chart', methods=['GET'])
-# def default_chart():
-#     return redirect('/chart/5')
 
 @app.route('/api/user_id', methods=['POST'])  # a seprate route just for getting the choosen user id 
 def user_id():
@@ -128,6 +110,8 @@ def user_id():
 
     else:
         session['selected_user_id'] = None
+
+    
     return jsonify({"selected_user_id": selected_user_id})
 
 @app.route('/api/window_size', methods=['POST']) # a seprate route just for getting the window size
@@ -144,30 +128,13 @@ def window_size():
 
     return jsonify({"window_size": window_sizee})
 
-# @app.route('/chart', methods=['GET', 'POST']) # routing to chart page where all the variables should be availible
-# def chart():
-#     #get all unique user_ids
-#     # window_size=5
-#     user_ids_ = distinct_userIdExtract_extract_from_table() # calling the funtion to send the user_ids to front in order to select one by user
-#     user_ids = [user_id_a['USER_ID'] for user_id_a in user_ids_] # appending all the recevied usesr_ids into a list (raw data : {USER_ID : "..."} ---> this list :["....", "...."])
+@app.route('/api/latest_timestamp')
+def lateTime():
+     user_id = request.args.get('userid')
+     maxTimestamp, minTimestamp = get_latest_timestamp(user_id)
 
-#     user_ids.sort(reverse=False) #sorting 
-    
-#     tehran = pytz.timezone('Asia/Tehran')
-#     meanHR = None
-#     # If a specific user_id was chosen, filter the data for that user_id
+     return jsonify({'maxTimestamp' : datetime.fromtimestamp(int(maxTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S'), 'minTimestamp': datetime.fromtimestamp(int(minTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S')})
 
-#     asgar = "Please select User ID, then select a time interval"
-
-
-#     window_sizee = 5
-#     if 'window_size' in session:
-        
-#         window_sizee = session['window_size']
-
-#     return render_template('chart.html', title='chart', selected_user_id=session.get('selected_user_id'), user_ids=user_ids, MA_window=window_sizee)
-
-# this route is for receving requests from server by using the new route don't need for refreshing the /chart page to send new requests( here requests are time intervals which will be use to extract less data from table)
 @app.route('/api/time_interval')
 def get_data():
 
@@ -177,7 +144,6 @@ def get_data():
     selected_user_id = session.get('selected_user_id')
     selected_user_id = request.args.get('userid')
     entered_window_size = request.args.get('windowsize')
-    session['interval'] = interval
     if  selected_user_id == None:
         return jsonify({"error" : "User id not selected"}), 400   # using flask jasinify to send real json to javasctrpt
    
@@ -192,7 +158,7 @@ def get_data():
         return jsonify({"error": "Invalid time interval"}), 400
     
     time = time_intervals[interval] # passing the key 'interval' recevied from js to get its value in second
-    tehran = pytz.timezone('Asia/Tehran')
+    #tehran = pytz.timezone('Asia/Tehran')
 
     try:
         data_dicts = extract_selectedUser_data(selected_user_id, time)
@@ -209,9 +175,6 @@ def get_data():
         
         heart_rates_MA= calculating_moving_average(heart_rates,int(window_sizee))
         
-
-
-
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
 
@@ -219,28 +182,39 @@ def get_data():
     return jsonify({"timestamps": timestamps, "heart_rates": heart_rates, "heart_rates_MA": heart_rates_MA})
 
 
+@app.route('/api/calenderTimeinterval')
+def calTime():
+         
 
-
-
-
-# @app.route('/data/<int:a>/<username>', methods=['GET'])
-# def heartrateraw(a, username):
-#     dict_user_data = None
+    selected_user_id = session.get('selected_user_id')
+    selected_user_id = request.args.get('userid')
+    entered_window_size = request.args.get('windowsize')
+    start_date = datetime.fromisoformat(request.args.get('startdate')).timestamp()
+    end_date = datetime.fromisoformat(request.args.get('enddate')).timestamp()
+    if  selected_user_id == None:
+        return jsonify({"error" : "User id not selected"}), 400   # using flask jasinify to send real json to javasctrpt
    
-#     select = username
-#     dict_res = distinct_userIdExtract_extract_from_table()
-#     dict_user_data = extract_selectedUser_data(select, time=a)
 
-#     return render_template('data.html', title='raw data', data=dict_res, dict_user_data=dict_user_data)
-    
+    #tehran = pytz.timezone('Asia/Tehran')
+
+    try:
+        data_dicts = extract_selected_userid_data_withDates(selected_user_id, startDate=start_date, endDate=end_date)
+        timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP']) + 2.5*60*60).strftime('%Y-%m-%d %H:%M:%S') for data in data_dicts]
+        heart_rates = [data['HEART_RATE'] for data in data_dicts]
+        window_sizee = 5
+        if 'window_size' in session:
+            
+            window_sizee = session['window_size']
+        elif entered_window_size:
+             window_sizee = entered_window_size
+        else:
+            window_sizee = 5
+        
+        heart_rates_MA= calculating_moving_average(heart_rates,int(window_sizee))
+        
+    except Exception as e:
+        return jsonify({"error" : str(e)}), 500
 
 
-
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     return render_template('login.html')
-
-
-# @app.route('/signup', methods=['GET', 'PSOT'])
-# def signup():
-#     return render_template('login.html')
+    return jsonify({"timestamps": timestamps, "heart_rates": heart_rates, "heart_rates_MA": heart_rates_MA})
+     
