@@ -5,10 +5,7 @@ import {BiChevronDown, BiChevronRight} from 'react-icons/bi'
 import {AiOutlineSearch} from 'react-icons/ai'
 import axios from 'axios';
 import dynamic from 'next/dynamic'
-import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker';
-import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker.css';
-import 'react-calendar/dist/Calendar.css';
-import 'react-clock/dist/Clock.css';
+
 
 
 const DynamicApexChart = dynamic(() => import ('react-apexcharts'), { ssr: false }); //dynamic import to prevent ssr
