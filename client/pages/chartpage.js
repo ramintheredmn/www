@@ -1,16 +1,15 @@
+'use client'
 import Navabr from "../components/navbar"
-
 import React, { useEffect, useState, useRef } from "react";
 import {BiChevronDown, BiChevronRight} from 'react-icons/bi'
-import {AiOutlineSearch} from 'react-icons/ai'
+import {AiOutlineSearch, AiFillCloseCircle} from 'react-icons/ai'
+import Combobox from "react-widgets/Combobox";
 import axios from 'axios';
 import dynamic from 'next/dynamic'
-
-
-
 const DynamicApexChart = dynamic(() => import ('react-apexcharts'), { ssr: false }); //dynamic import to prevent ssr
 
 
+// ----------- //
 // chart component
 function Chart(probs) {
 
@@ -97,17 +96,7 @@ function Chart(probs) {
       tooltip: {
         x: {
           format: "dd MMM yyyy HH:mm"
-        },
-      },
-
-      
-
-    },
-
-  }
-
-
-
+        },},},  }
   return(
     <div className=" h-[80vh]">
       {(typeof window !== 'undefined') &&
@@ -117,8 +106,11 @@ function Chart(probs) {
     
   )
 }
+
+// -----------------//
 // sidebar
-  function Sidebar(props) {
+function Sidebar(props) {
+  // definging variables
     const [userHeartRate, setUserHeartRate] = useState([]);
     const [userTimestamp, setUserTimestamp] = useState([]);
     const [userHeartRateMA, setUserHeartRateMA] = useState([]);
@@ -127,9 +119,19 @@ function Chart(probs) {
       
     })
     const [toolbar, setToolbar] = useState(true)
+    const [windowsize, setWindow] = useState('5')
+    const [value, setValue] = useState({
+      startDate: null,
+      endDate: null
+  });
+    const [startDate, setStartdate] = useState(value.minTimestamp)
+    const [endDate, setEnddate] = useState(value.endDate)
+    const [calenderon, setCalnderon] = useState(false)
+    const [selected, setSelected] = useState(null)
+  // end of definig variables
 
-    
-
+// every thing is the return () is jsx an equevalant to html which will be rendered on the browser
+// codes in {} are javascript
     return(
         <div className="drawer">
             <input id="my-drawer" type="checkbox" className="drawer-toggle" checked={side.open} />
@@ -149,35 +151,61 @@ function Chart(probs) {
                   setSide({open: ""})
                   setToolbar(true)
                   }} htmlFor="my-drawer" className=" drawer-overlay"></label>
-                <ul className="menu p-1 w-50 min-h-full bg-base-200 text-base-content">
-                    
-                  <li><a><UserIdDropDown setUserHeartRateMA={setUserHeartRateMA} setUserHeartRate={setUserHeartRate} setUserTimestamp={setUserTimestamp} setside={setSide} setToolbar={setToolbar} /></a></li>
-                  
-                  <div className="w-70 bg-base-200"></div>
 
+                  {/* below is the menu in drawer side 
+                  at now it has user id dropdown and 
+                  window size input and calender */}
+                
+                <ul className="menu menu-sm p-4 w-50 min-h-full bg-base-200 text-base-content">
+                <li className="items-end"><button 
+                onClick={()=> {
+                  setSide({open: ""})
+                  setToolbar(true)
+                }}
+                className=" text-2xl"><AiFillCloseCircle/></button></li>
+                  {/* calling the useid dropdown component and passing the props */}
+                  <div className=" ">
+                  <li className="items-start mt-3"><a><UserIdDropDown 
+                  selected={selected}
+                  setSelected={setSelected}
+                  endDate={endDate}
+                  startDate={startDate}
+                  setValue={setValue}
+                  value={value}
+                  calenderon={calenderon}
+                  setUserHeartRateMA={setUserHeartRateMA}
+                  setUserHeartRate={setUserHeartRate}
+                  setUserTimestamp={setUserTimestamp}
+                  setside={setSide} setToolbar={setToolbar} 
+                  windowSize={windowsize} /></a></li>
 
+                  {/* calling the window size input and submit and passing the props */}
+                  <li className=""><a><Windowsizec windowsize={windowsize} setWindow={setWindow} /></a></li>
+
+                  {/* calling the calender component and passing the props */}
+                  <li><a><Calendertoggle 
+                  value={value}
+                  startdate={startDate} 
+                  setstartdate={setStartdate} 
+                  enddate={endDate} 
+                  setenddate={setEnddate}
+                  setCalnderon={setCalnderon}
+                  calenderon={calenderon}
+                  selected={selected}
+                   /></a></li>
+
+                  </div>
                 </ul>
             </div>
         </div>
     )
 }
-// the main component for fetching and showing data 
-function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp, setside, setToolbar}) {
+
+// ------------------------ \\
+// user ids, the main component, comunication with api and sharing data with other components occur here 
+function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp, startDate,endDate, windowSize, value, setValue, calenderon, selected, setSelected}) {
   // definig variables
-    const [userids, setUserids] = useState(null)
-    const [inputValue, setInputValue] = useState("")
-    const [selected, setSelected] = useState("")
-    const [open, setOpen] = useState(false)
-    const [windowsize, setWindow] = useState('5')
-    const [windowinputValue, setWindowInputValue] = useState(windowsize);
-    const [value, setValue] = useState({
-      startDate: null,
-      endDate: null
-  });
-  const [startDate, setStartdate] = useState(value.minTimestamp)
-  const [endDate, setEnddate] = useState(value.endDate)
-  const [calenderon, setCalnderon] = useState(false)
- 
+    const [userids, setUserids] = useState(['userid'])
   // end definig varibales
 
   // defining functions
@@ -250,11 +278,8 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         console.log('Error : ', error);
       }
     };
-
     const fetchUserDataCal = async (selected, windowsize, startDate, endDate) => {
       try {
-
-
         const res = await axios.get(`/api/calenderTimeinterval?userid=${selected}&windowsize=${windowsize}&startdate=${startDate}&enddate=${endDate}`);
         const user_data = res.data;
   
@@ -291,90 +316,49 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
     useEffect(() => {
       if (selected) {
           sendData(selected);
-          calenderon?fetchUserDataCal(selected, windowsize, startDate, endDate):fetchUserData(selected, windowsize);
-
-      }
-  }, [selected, windowsize, startDate, endDate]);
+          calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
+}}, [selected, windowSize, startDate, endDate]);
 // end calling functions
-
-
-
-  
     return (
-      <div className='w-[20hv] font-medium'>
-              <div
-              onClick={()=> setOpen(!open)}
-              className={`bg-white text-gray-900 w-full h-full p-1 flex items-center justify-between rounded ${!selected && "text-gray-700"}`}>
-                {selected ? selected : 'select user id'}
-                <BiChevronDown size={20}/>
-              </div>
-              <ul className={`bg-white mt-2 pr-2 overflow-y-auto ${open ? "max-h-60" : "max-h-0"}`} >
-                <div className='flex items-center sticky top-0 bg-white'>
-                  <AiOutlineSearch size={18} className='text-gray-700'/>
-                  <input type='text'
-                  value={inputValue}
-                  onChange={(e) => {
-                    setInputValue(e.target.value)
-                  }
-                  }
-                  placeholder='Enter user ID'
-                  className='w-full placeholder:text-gray-800 text-gray-800 bg-white p-2 mr-2 outline-none' />
-                </div>
-                
-                {
-                  userids?.map((userid) => (
-                    <li key={userid}
-                    onClick={() => {
-                      setSelected(userid !== selected && userid)
-                      setOpen(false)
-                      setside({
-                       open: ""
-                      })
-                      setToolbar(true)
-                    }}
-                    className={`text-black p-2 text-sm hover:bg-sky-600 hover:text-white
-                    ${userid?.startsWith(inputValue) ? "block" : "hidden"}`}>
-                      {userid}</li>
-        
-                  ))
-                }
-                
-              </ul>
-             
-              <div className="mt-3 w-70 join">
-                <input
-                  value={windowinputValue}
-                  onChange={(e) => setWindowInputValue(e.target.value)}
-                  className="flex w-70 input input-bordered join-item"
-                  placeholder="Enter window size"
-                />
-                <button
-                  onClick={() => setWindow(windowinputValue)}
-                  className="btn join-item rounded-r-full"
-                >
-                  Submit
-                </button>
-              </div>
-              <br></br> 
-              <div className=" flex flex-row mt-4"><p className="">I want to use the calender</p><input type="checkbox" className=" ml-2 toggle" onChange={() => setCalnderon(!calenderon)} /></div>
+      <div className="">
+        <Combobox
+          defaultValue="Enter user id"
+          value={selected}
+          data={userids}
+          onChange={(e)=> {
+            setSelected(e)
+            console.log(e)}}
+        />
+      </div>
+    )}
 
-                  <div className={`${calenderon ? "collapse" : "collapse collapse-close"}  mt-4 collapse bg-base-100 h-full `}>
-                    <input type="checkbox" />
-                    <div className="collapse-title text-xl font-medium">
-                      Click to show calender
-                    </div>
-                    <div className="h-full w-full collapse-content">
-                      <p>first select a user-id <br></br> by default the chart shows the last day<br></br>select between the days below : </p>
-                      <div className="">{selected?<p>The seleceted user Id has data from <br></br> {value.startDate} to {value.endDate} </p>: <p>select a user ID first</p>}</div>
-                      <Calendermodal startdate={startDate} setstartdate={setStartdate} enddate={endDate} setenddate={setEnddate} />
-                    </div>
-                  </div>
-            </div>
-      
-    )
-  }
+// ----------------------------- //
+//window size input comp
+function Windowsizec ({windowsize, setWindow}) {
 
-  function Calendermodal({startdate, setstartdate, enddate, setenddate}) {
+  const [windowinputValue, setWindowInputValue] = useState(windowsize);
+  return(
+    <>         
+    <div className=" mt-3 join">
+    <input
+      value={windowinputValue}
+      onChange={(e) => setWindowInputValue(e.target.value)}
+      className="input input-bordered join-item w-20"
+      placeholder="Enter window size"
+    />
+    <button
+      onClick={() => setWindow(windowinputValue)}
+      className="btn bg-base-300 join-item rounded-r-full"
+    >
+      Submit
+    </button>
+  </div>
+  </>
+)}
+
+// -------------------------------------- //
+// calender pop up
+function Calendermodal({startdate, setstartdate, enddate, setenddate}) {
     const [inputdate, setInputdate] = useState({
       startdate: null,
       enddate: null
@@ -390,7 +374,7 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
               <div className="card-body flex flex-col items-center justify-center">
               <div
               onChange={(e) => setInputdate(ps => ({...ps, startdate: e.target.value}))}
-              value={inputdate.startDate}
+              value={inputdate.startdate}
               className="mt-5"><h3>Enter the start date and time : </h3><input type="datetime-local"></input></div>
               <div 
               onChange={(e) => setInputdate(ps => ({...ps, enddate: e.target.value}))}
@@ -398,9 +382,10 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
               className="mt-5"><h3>Enter the end date and time : </h3><input type="datetime-local"></input></div>
               <button
               onClick={() => {
-                 console.log("start daate is", startdate, " enddate is :", enddate )
                  setstartdate(inputdate.startdate)
                  setenddate(inputdate.enddate)
+                 console.log("start daate is", startdate, " enddate is :", enddate )
+
                 }} 
               className="mt-3 btn btn-primary">submit</button>
             </div>
@@ -417,11 +402,40 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         </dialog>
       </>
     )
-  }
-  
+}
 
+//--------------------------------------------------//
+// calener date input
+function Calendertoggle({startdate, setstartdate, setenddate, enddate, setCalnderon, calenderon, selected, value}) {
+  return(
+    <div className="flex flex-col">
+      <div className="flex flex-row items-start mt-4">
+        <p className="">I want to use the calender</p>
+          <input type="checkbox" className=" ml-2 toggle" 
+          onChange={() => setCalnderon(!calenderon)} /></div>
 
+          <br></br>
 
+      <div className={`${calenderon ? "collapse" : "collapse collapse-close"}  mt-4 collapse bg-base-100 h-full `}>
+        <input type="checkbox" />
+        <br></br>
+        <div className="collapse-title text-xl font-medium">
+          Click to show calender
+        </div>
+        <div className="h-full w-full collapse-content">
+          <p>first select a user-id <br></br> by default the chart shows the last day<br></br>select between the days below : </p>
+          <div className="">{selected ? <p>The seleceted user Id has data from <br></br> {value.startDate} to {value.endDate} </p> : <p>select a user ID first</p>}</div>
+          <Calendermodal startdate={startdate} setstartdate={setstartdate} enddate={enddate} setenddate={setenddate} />
+        </div>
+      </div>
+    </div>
+
+  )
+}
+
+//------------------ END OF THE COMPONENTS -------------------------\\
+
+// the default componnet
 function Chartpage(){
 
   const [theme, setTheme] = useState('light')
