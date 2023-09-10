@@ -1,8 +1,9 @@
 'use client'
 import Navabr from "../components/navbar"
 import React, { useEffect, useState, useRef } from "react";
-import {BiChevronDown, BiChevronRight} from 'react-icons/bi'
-import {AiOutlineSearch, AiFillCloseCircle} from 'react-icons/ai'
+import {BiChevronDown, BiChevronRight, BsPin} from 'react-icons/bi'
+import {PiPushPinSimpleBold, PiPushPinSimpleSlashBold} from 'react-icons/pi'
+import {AiOutlineSearch, AiFillCloseCircle, AiFillPushpin, AiOutlinePushpin} from 'react-icons/ai'
 import Combobox from "react-widgets/Combobox";
 import axios from 'axios';
 import dynamic from 'next/dynamic'
@@ -83,7 +84,7 @@ function Chart(probs) {
         }
       },
       theme: {
-        mode: 'dark', 
+        mode: probs.theme=='dark' ? 'dark' : 'light', 
         fill: 'black',
         palette: 'palette5', 
         monochrome: {
@@ -128,17 +129,18 @@ function Sidebar(props) {
     const [endDate, setEnddate] = useState(value.endDate)
     const [calenderon, setCalnderon] = useState(false)
     const [selected, setSelected] = useState(null)
+    const [sidepin, setSidepin] = useState(false)
   // end of definig variables
 
 // every thing is the return () is jsx an equevalant to html which will be rendered on the browser
 // codes in {} are javascript
     return(
-        <div className="drawer">
+        <div className={`drawer ${sidepin&&'drawer-open'} `}>
             <input id="my-drawer" type="checkbox" className="drawer-toggle" checked={side.open} />
-            <div className="drawer-content">
-            <div className="bg-base-100">
+            <div className="drawer-content bg-base-100">
+            <div className="">
 
-              <div className="object-contain basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} toolbarsat={toolbar} /></div>
+              <div className="object-contain basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} toolbarsat={toolbar} theme={props.theme} /></div>
               <label htmlFor="my-drawer" className=" basis-3 place-items-start w-3 btn btn-secondary"><figure onClick={() => {
                  setSide({open: "checked"})
                  setToolbar(false)
@@ -157,12 +159,21 @@ function Sidebar(props) {
                   window size input and calender */}
                 
                 <ul className="menu menu-sm p-4 w-50 min-h-full bg-base-200 text-base-content">
-                <li className="items-end"><button 
+                <li className="items-end flex flex-row justify-end">
+                <button 
+                onClick={()=> {
+                  setSidepin(!sidepin)
+                  setToolbar(true)
+                }}
+                className=" text-xl">{sidepin?<PiPushPinSimpleSlashBold/>:<PiPushPinSimpleBold />}</button>
+                <button 
                 onClick={()=> {
                   setSide({open: ""})
                   setToolbar(true)
                 }}
-                className=" text-2xl"><AiFillCloseCircle/></button></li>
+                className=" text-xl"><AiFillCloseCircle/></button>
+                </li>
+                                <li className="items-end"></li>
                   {/* calling the useid dropdown component and passing the props */}
                   <div className=" ">
                   <li className="items-start mt-3"><a><UserIdDropDown 
@@ -206,6 +217,7 @@ function Sidebar(props) {
 function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp, startDate,endDate, windowSize, value, setValue, calenderon, selected, setSelected}) {
   // definig variables
     const [userids, setUserids] = useState(['userid'])
+    const [tabFocused, setTabFocused] = useState(true); 
   // end definig varibales
 
   // defining functions
@@ -305,6 +317,23 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
 // I use useEffect hook to only rerender the component when is needed, the state of the varible(s) inside the 
 // list of the hook cause the functions inside the hook to run, 
 
+useEffect(() => {
+  // Function to run when tab gains focus
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      setTabFocused(true); // Change state to re-run useEffect
+    }
+  };
+
+  // Attach the event listener
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+
+  // Clean up event listener when component unmounts or before new effect runs
+  return () => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+  };
+}, []);
+
     useEffect(()=> {
       fetchUserIds()
     }, [])
@@ -317,6 +346,14 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
       if (selected) {
           sendData(selected);
           calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
+          setTabFocused(false)
+          const timer = setTimeout(() => {
+            setSelected(selected);
+          }, 300000);
+
+          return () => {
+            clearTimeout(timer);
+          };
 }}, [selected, windowSize, startDate, endDate]);
 // end calling functions
     return (
@@ -449,7 +486,7 @@ function Chartpage(){
     <>
     <div className="">
     <Navabr title="Chart" setTeme={setTheme} />
-    <div className="w-full h-full"><Sidebar /></div>
+    <div className="w-full h-full"><Sidebar theme={theme} /></div>
 
     </div>
 
