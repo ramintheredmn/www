@@ -208,3 +208,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+client/next.config.js
