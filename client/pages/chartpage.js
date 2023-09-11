@@ -339,22 +339,22 @@ useEffect(() => {
     }, [])
 
     useEffect(() => {
-      fetchLatestTimestamp(selected);
+      selected&&fetchLatestTimestamp(selected);
     }, [selected])
   
     useEffect(() => {
       if (selected) {
-          sendData(selected);
-          calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
           setTabFocused(false)
-          const timer = setTimeout(() => {
-            setSelected(selected);
-          }, 300000);
+          sendData(selected);
+          // calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
 
-          return () => {
-            clearTimeout(timer);
-          };
-}}, [selected, windowSize, startDate, endDate]);
+          const interval = setInterval(() => {
+          calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
+           },5*60*1000);
+           return () => clearInterval(interval);
+
+
+}}, [selected, windowSize, startDate, endDate, tabFocused]);
 // end calling functions
     return (
       <div className="">
