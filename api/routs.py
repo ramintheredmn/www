@@ -6,6 +6,7 @@ from sqlalchemy import text
 from datetime import datetime
 from api import app
 from sqlalchemy.orm import sessionmaker
+import json
 import pytz
 
 @app.route('/')
@@ -67,36 +68,34 @@ session_dta = Session()
 
 @app.route('/receive', methods=['GET', 'POST'])
 def receive():
-
     try:
-        received_data = request.get_json() # recived data will be stored in received_data at first
+        received_data = request.get_json()
 
         if not received_data:
             return 'No data received', 400
 
-        data_ = [received_data]  # directly appending the dictionary to the list
+        data_ = [received_data]
 
-        for info in data_:  
+        for info in data_:
             USER_ID = info['UserID']
             HeartRate = info['HeartRates']
+            
             for hr in HeartRate:
-                # converting the timestamp to integer then formating it to normal tehran datetime
-                ### update : due to the database pervious records which were in timestamp this conversion will occur in sending data to front
-                ts = int(hr['TimeStamp'])
-                H_R = int(hr['HeartRate'])  # converting the heart rate to integer
-                #check the exictence of a timestamp
+                ts = str(hr['TimeStamp'])
+                H_R = str(hr['HeartRate'])
+                s = str(hr['Steps'])
+                
                 existing_sample = session_dta.query(MiBandActivitySample).filter_by(USER_ID=USER_ID, TIMESTAMP=ts).first()
 
-                # if it doesn't exist, add new record
                 if existing_sample is None:
-                    sample = MiBandActivitySample(USER_ID=USER_ID, TIMESTAMP=ts, HEART_RATE=H_R)
+                    sample = MiBandActivitySample(USER_ID=USER_ID, TIMESTAMP=ts, HEART_RATE=H_R, STEPS=s)
                     session_dta.add(sample)
-
+        
         session_dta.commit()
         return 'Data received', 200
 
     except Exception as e:
-        session_dta.rollback() # Rollback the changes on error
+        session_dta.rollback()
         return f'An error occurred while processing the data: {str(e)}', 500
     
 
@@ -138,7 +137,7 @@ def lateTime():
 @app.route('/api/time_interval')
 def get_data():
 
-# to get interval from frot  
+# to get interval from front  
     
     interval = request.args.get('interval') # java script will send this
     selected_user_id = session.get('selected_user_id')
@@ -164,6 +163,7 @@ def get_data():
         data_dicts = extract_selectedUser_data(selected_user_id, time)
         timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP']) + 2.5*60*60).strftime('%Y-%m-%d %H:%M:%S') for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
+        steps = [data['STEPS'] for data in data_dicts]
         window_sizee = 5
         if 'window_size' in session:
             
@@ -179,7 +179,7 @@ def get_data():
         return jsonify({"error" : str(e)}), 500
 
 
-    return jsonify({"timestamps": timestamps, "heart_rates": heart_rates, "heart_rates_MA": heart_rates_MA})
+    return jsonify({"timestamps": timestamps, "heart_rates": heart_rates, "heart_rates_MA": heart_rates_MA, "steps": steps})
 
 
 @app.route('/api/calenderTimeinterval')

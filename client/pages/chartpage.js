@@ -18,10 +18,16 @@ function Chart(probs) {
   let state = {
     series: [{
       name: 'Heart Rate',
+      type: 'line',
       data: probs.userHeartRate
     }, {
     name: 'Moving average',
+    type: 'line',
     data: probs.userHeartRateMA
+    }, {
+      name: "steps",
+      type: "bar",
+      data: probs.userSteps
     }
   ],
     options: {
@@ -115,6 +121,7 @@ function Sidebar(props) {
     const [userHeartRate, setUserHeartRate] = useState([]);
     const [userTimestamp, setUserTimestamp] = useState([]);
     const [userHeartRateMA, setUserHeartRateMA] = useState([]);
+    const [userSteps, setUsersteps] = useState([])
     const [side, setSide] = useState({
       open: "",
       
@@ -140,7 +147,7 @@ function Sidebar(props) {
             <div className="drawer-content bg-base-100">
             <div className="">
 
-              <div className="object-contain basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userTimestamp={userTimestamp} toolbarsat={toolbar} theme={props.theme} /></div>
+              <div className="object-contain basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userSteps={userSteps} userTimestamp={userTimestamp} toolbarsat={toolbar} theme={props.theme} /></div>
               <label htmlFor="my-drawer" className=" basis-3 place-items-start w-3 btn btn-secondary"><figure onClick={() => {
                  setSide({open: "checked"})
                  setToolbar(false)
@@ -187,6 +194,7 @@ function Sidebar(props) {
                   setUserHeartRateMA={setUserHeartRateMA}
                   setUserHeartRate={setUserHeartRate}
                   setUserTimestamp={setUserTimestamp}
+                  setUsersteps ={setUsersteps}
                   setside={setSide} setToolbar={setToolbar} 
                   windowSize={windowsize} /></a></li>
 
@@ -214,7 +222,7 @@ function Sidebar(props) {
 
 // ------------------------ \\
 // user ids, the main component, comunication with api and sharing data with other components occur here 
-function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp, startDate,endDate, windowSize, value, setValue, calenderon, selected, setSelected}) {
+function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp, setUsersteps, startDate,endDate, windowSize, value, setValue, calenderon, selected, setSelected}) {
   // definig variables
     const [userids, setUserids] = useState(['userid'])
     const [tabFocused, setTabFocused] = useState(true); 
@@ -283,9 +291,13 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         const formattedDataMa = user_data.heart_rates_MA.map((value, index) => {
           return { x: user_data.timestamps[index], y: Math.floor(value) };
         });
+        const formattedDataSteps = user_data.steps.map((value, index) => {
+          return { x: user_data.timestamps[index], y: Math.floor(value) };
+        });
         setUserHeartRate(formattedData);
         setUserTimestamp(user_data['timestamps']);
         setUserHeartRateMA(formattedDataMa)
+        setUsersteps(formattedDataSteps)
       } catch (error) {
         console.log('Error : ', error);
       }
@@ -346,7 +358,7 @@ useEffect(() => {
       if (selected) {
           setTabFocused(false)
           sendData(selected);
-          // calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
+          calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
 
           const interval = setInterval(() => {
           calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);

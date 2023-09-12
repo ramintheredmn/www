@@ -1,5 +1,5 @@
 from api.database import engine
-from sqlalchemy import Column, Integer, String, DateTime, text
+from sqlalchemy import Column, Integer, String, DateTime, text, Text
 from sqlalchemy.ext.declarative import declarative_base
 import numpy as np
 import pandas as pd
@@ -24,13 +24,15 @@ def get_latest_timestamp(user_id):
 Base = declarative_base()
 
 
-class MiBandActivitySample(Base):     #a class inheriting declarative_base() in order to interact with database with python syntax
-    __tablename__ = 'MI_BAND_ACTIVITY_SAMPLE'
 
-    id = Column(Integer, primary_key=True)
-    USER_ID = Column(String(50))
-    TIMESTAMP = Column(DateTime)
-    HEART_RATE = Column(Integer)
+class MiBandActivitySample(Base):
+    __tablename__ = 'MI_BAND_ACTIVITY_SAMPLE'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)  # Add autoincrement
+    USER_ID = Column(String(30), nullable=False)  # Change length to 30 and make non-nullable
+    TIMESTAMP = Column(String(50), nullable=False)  # Change type to String and make non-nullable
+    HEART_RATE = Column(String(30), nullable=False)  # Change type to String and make non-nullable
+    STEPS = Column(String(30), nullable=True)
 
 def distinct_userIdExtract_extract_from_table():  # function to extract userids from table
     
@@ -48,7 +50,7 @@ def extract_selectedUser_data(user_id, time):
 # sql query in order to execute data from table with respect to user_id and time interval text() function identifies :user_id and :time as variables and should be passed in execute function as dictionary
 
     query = text('''
-        select distinct TIMESTAMP, HEART_RATE 
+        select distinct TIMESTAMP, HEART_RATE, STEPS
         from MI_BAND_ACTIVITY_SAMPLE 
         where USER_ID = :user_id
         and TIMESTAMP >= (
