@@ -145,13 +145,16 @@ function Sidebar(props) {
         <div className={`drawer ${sidepin&&'drawer-open'} `}>
             <input id="my-drawer" type="checkbox" className="drawer-toggle" checked={side.open} />
             <div className="drawer-content bg-base-100">
-            <div className="">
+            <div className="flex flex-row">
 
-              <div className="object-contain basis-auto bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userSteps={userSteps} userTimestamp={userTimestamp} toolbarsat={toolbar} theme={props.theme} /></div>
-              <label htmlFor="my-drawer" className=" basis-3 place-items-start w-3 btn btn-secondary"><figure onClick={() => {
-                 setSide({open: "checked"})
-                 setToolbar(false)
-                 }} className="flex items-center"><BiChevronRight size={40} /></figure></label>
+            <label htmlFor="my-drawer"
+            onClick={() => {
+              setSide({open: "checked"})
+              setToolbar(false)
+              }}
+             className="h-screen basis-3 p-0 place-content-between flex items-center w-5 bg-slate-300 text-black text-2xl"><figure><BiChevronRight/></figure></label>
+              <div className="object-contain basis-auto w-screen bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userSteps={userSteps} userTimestamp={userTimestamp} toolbarsat={toolbar} theme={props.theme} /></div>
+
               
             </div>
             </div>
