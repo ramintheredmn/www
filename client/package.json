@@ -23,6 +23,7 @@
     "react-clock": "^4.5.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.10.1",
+    "react-loader-spinner": "^5.4.5",
     "react-sizeme": "^3.0.2",
     "react-tailwindcss-datepicker": "^1.6.6",
     "react-tailwindcss-datetimepicker": "^1.0.6",

@@ -7,6 +7,7 @@ import {AiOutlineSearch, AiFillCloseCircle, AiFillPushpin, AiOutlinePushpin} fro
 import Combobox from "react-widgets/Combobox";
 import axios from 'axios';
 import dynamic from 'next/dynamic'
+import Loading from "@/components/loading";
 const DynamicApexChart = dynamic(() => import ('react-apexcharts'), { ssr: false }); //dynamic import to prevent ssr
 
 
@@ -137,6 +138,8 @@ function Sidebar(props) {
     const [calenderon, setCalnderon] = useState(false)
     const [selected, setSelected] = useState(null)
     const [sidepin, setSidepin] = useState(false)
+    const [loading, setLoading] = useState(false)
+
   // end of definig variables
 
 // every thing is the return () is jsx an equevalant to html which will be rendered on the browser
@@ -145,18 +148,30 @@ function Sidebar(props) {
         <div className={`drawer ${sidepin&&'drawer-open'} `}>
             <input id="my-drawer" type="checkbox" className="drawer-toggle" checked={side.open} />
             <div className="drawer-content bg-base-100">
-            <div className="flex flex-row">
-
-            <label htmlFor="my-drawer"
-            onClick={() => {
-              setSide({open: "checked"})
-              setToolbar(false)
+          <div className="flex flex-row h-screen">
+            <label
+              htmlFor="my-drawer"
+              onClick={() => {
+                setSide({ open: "checked" })
+                setToolbar(false)
               }}
-             className="h-screen basis-3 p-0 place-content-between flex items-center w-5 bg-slate-300 text-black text-2xl"><figure><BiChevronRight/></figure></label>
-              <div className="object-contain basis-auto w-screen bg-base-100"><Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userSteps={userSteps} userTimestamp={userTimestamp} toolbarsat={toolbar} theme={props.theme} /></div>
+              className="h-full p-0 flex items-center w-5 bg-slate-300 text-black text-2xl">
+              <figure>
+                <BiChevronRight />
+              </figure>
+            </label>
 
-              
-            </div>
+            {/* Loading component */}
+            {loading ? (
+              <div className="flex items-center justify-center flex-grow">
+                <Loading />
+              </div>
+            ) : (
+              <div className="object-contain flex-grow bg-base-100">
+                <Chart userHeartRateMA={userHeartRateMA} userHeartRate={userHeartRate} userSteps={userSteps} userTimestamp={userTimestamp} toolbarsat={toolbar} theme={props.theme} />
+              </div>
+            )}
+          </div>
             </div>
             <div className="drawer-side">
                 <label onClick={() => {
@@ -186,7 +201,8 @@ function Sidebar(props) {
                                 <li className="items-end"></li>
                   {/* calling the useid dropdown component and passing the props */}
                   <div className=" ">
-                  <li className="items-start mt-3"><a><UserIdDropDown 
+                  <li className="items-start mt-3"><a><UserIdDropDown
+                  setloading={setLoading}
                   selected={selected}
                   setSelected={setSelected}
                   endDate={endDate}
@@ -225,10 +241,12 @@ function Sidebar(props) {
 
 // ------------------------ \\
 // user ids, the main component, comunication with api and sharing data with other components occur here 
-function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp, setUsersteps, startDate,endDate, windowSize, value, setValue, calenderon, selected, setSelected}) {
+function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestamp,
+  setside, setloading,
+  setUsersteps, startDate,endDate, windowSize, value, setValue, calenderon, selected, setSelected}) {
   // definig variables
     const [userids, setUserids] = useState(['userid'])
-    const [tabFocused, setTabFocused] = useState(true); 
+    const [tabFocused, setTabFocused] = useState(true);
   // end definig varibales
 
   // defining functions
@@ -242,7 +260,7 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
       console.log(userid_data['user_ids'])
       setUserids(userid_data['user_ids'])
     } catch (error) {
-      console.log('Error : ', error)
+      // console.log('Error : ', error)
     }
   };
  // function for posting the selected user id to api
@@ -254,9 +272,9 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         }
         
       });
-      console.log('success: ', response.data);
+      // console.log('success: ', response.data);
     } catch (er) {
-      console.error("eror", er)
+      // console.error("eror", er)
     }}
 
     // function for getting the first and the latest timestamp for the selected user id
@@ -272,10 +290,10 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
               
           });
 
-          console.log(value)
+          // console.log(value)
 
       } catch (error) {
-          console.log('Error fetching latest timestamp:', error);
+          // console.log('Error fetching latest timestamp:', error);
       }
   };
 // function for getting the heart rates and MA and TS of the selected user id
@@ -286,8 +304,8 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         const res = await axios.get(`/api/time_interval?interval=day&userid=${selected}&windowsize=${windowsize}`);
         const user_data = res.data;
   
-        console.log(user_data);
-        console.log(windowsize)
+        // console.log(user_data);
+        // console.log(windowsize)
         const formattedData = user_data.heart_rates.map((value, index) => {
           return { x: user_data.timestamps[index], y: Math.floor(value) };
         });
@@ -301,6 +319,7 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         setUserTimestamp(user_data['timestamps']);
         setUserHeartRateMA(formattedDataMa)
         setUsersteps(formattedDataSteps)
+        setloading(false)
       } catch (error) {
         console.log('Error : ', error);
       }
@@ -310,8 +329,8 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         const res = await axios.get(`/api/calenderTimeinterval?userid=${selected}&windowsize=${windowsize}&startdate=${startDate}&enddate=${endDate}`);
         const user_data = res.data;
   
-        console.log(user_data);
-        console.log(windowsize)
+        // console.log(user_data);
+        // console.log(windowsize)
         const formattedData = user_data.heart_rates.map((value, index) => {
           return { x: user_data.timestamps[index], y: Math.floor(value) };
         });
@@ -322,7 +341,7 @@ function UserIdDropDown ({ setUserHeartRateMA, setUserHeartRate, setUserTimestam
         setUserTimestamp(user_data['timestamps']);
         setUserHeartRateMA(formattedDataMa)
       } catch (error) {
-        console.log('Error : ', error);
+        // console.log('Error : ', error);
       }
     };
 // end defingig functions
@@ -359,13 +378,15 @@ useEffect(() => {
   
     useEffect(() => {
       if (selected) {
+          setloading(true)
           setTabFocused(false)
           sendData(selected);
           calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
 
           const interval = setInterval(() => {
+          setloading(true)
           calenderon?fetchUserDataCal(selected, windowSize, startDate, endDate):fetchUserData(selected, windowSize);
-           },5*60*1000);
+           }, 5*60*1000);
            return () => clearInterval(interval);
 
 
@@ -378,7 +399,12 @@ useEffect(() => {
           value={selected}
           data={userids}
           onChange={(e)=> {
+
             setSelected(e)
+            // setloading(true)
+            setside({
+              open: ""
+            })
             console.log(e)}}
         />
       </div>
