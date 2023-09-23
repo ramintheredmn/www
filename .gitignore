@@ -27,7 +27,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+
 lib64/
 parts/
 sdist/
@@ -241,3 +241,4 @@ client/.vercel
 # typescript
 client/*.tsbuildinfo
 client/next-env.d.ts
+client/package-lock.json
