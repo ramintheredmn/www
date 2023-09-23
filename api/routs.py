@@ -13,13 +13,13 @@ import pytz
 def index():
 	return app.send_static_file('index.html')
 
-@app.route('/chartpage')
-def chart():
-	return app.send_static_file('chartpage.html')
+# @app.route('/chartpage')
+# def chart():
+# 	return app.send_static_file('chartpage.html')
 
-@app.route('/about')
-def about():
-	return app.send_static_file('about.html')
+# @app.route('/about')
+# def about():
+# 	return app.send_static_file('about.html')
 
 @app.route('/api/useridlist')
 def test_next():
@@ -133,6 +133,43 @@ def lateTime():
      maxTimestamp, minTimestamp = get_latest_timestamp(user_id)
 
      return jsonify({'maxTimestamp' : datetime.fromtimestamp(int(maxTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S'), 'minTimestamp': datetime.fromtimestamp(int(minTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S')})
+
+
+
+
+
+
+@app.route('/api/heartrate/<int:userid>/<int:time>')
+def get_heartrate(userid, time):
+    
+    try:
+        data_dicts = extract_selectedUser_data(userid, time)
+        timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
+        heart_rates = [data['HEART_RATE'] for data in data_dicts]
+        session['heartrate'] = heart_rates
+        session['selected'] = userid
+    except Exception as e:
+        return jsonify({"error" : str(e)}), 500
+
+    return jsonify({"heartrate": heart_rates, "timestamps": timestamps})
+
+@app.route('/api/windowsize/<int:userid>/<int:windowsize>/<int:time>')
+def getMa(windowsize,userid,time):
+    try:
+        data_dicts = extract_selectedUser_data(userid, time)
+        timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
+        heart_rates = [data['HEART_RATE'] for data in data_dicts]
+        ma = calculating_moving_average(heart_rates, int(windowsize))
+
+    except Exception as e:
+        return jsonify({"error" : str(e)}), 500
+    return jsonify({"ma": ma, 'timestampMA': timestamps})
+
+
+
+
+
+
 
 @app.route('/api/time_interval')
 def get_data():
