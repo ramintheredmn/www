@@ -1,17 +1,21 @@
 'use client'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useSWR from 'swr';
+import useSWR, {preload} from 'swr';
 import Chart from "@/components/endUI/Chart";
 import { ComboboxDemo } from "@/components/endUI/UseridCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import { DatePickerWithRange } from "@/components/endUI/Datepicker";
 import ECGPlot from "@/components/endUI/Sleepchart";
+import axios from 'axios'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
+const preFetcher = (url:string) => fetch(url).then(res=>res.json())
+const fetcher = async (url:string) => {
+  const response = await axios.get(url);
+  return response.data;
+};
 function Fetch(url: string| null): any {
-  const { data, error, isLoading } = useSWR(url? url: null, fetcher);
+  const { data, error, isLoading } = useSWR(url? url: null, fetcher, { refreshInterval: 60*5*1000 });
   return {
     data,
     error,
@@ -21,6 +25,7 @@ function Fetch(url: string| null): any {
 
 export default function Home() {
   const [userid, setUserid] = useState("");
+  const [sleepUserid, setSleepuserid] = useState("")
   const { data: userData, error, isLoading } = Fetch(userid? `/api/heartrate/${userid}/86400`: null);
   const [maon, setMaon] = useState(false);
   const [windowsize, setWindowsize] = useState(5);
@@ -37,7 +42,9 @@ export default function Home() {
   } else {
     content = <div className="w-screen"><Chart heartrate={userData?.heartrate} timestamp={userData?.timestamps} ma={userMa?.ma} show={hrshow} /></div>;
   }
-  const {data: sleepData, error: sleepError, isLoading: isSleepL} = Fetch('/api/sleep')
+
+  preload(userid?`/api/sleep/${userid}`: null, preFetcher )
+  const {data: sleepData, error: sleepError, isLoading: isSleepL} = useSWR(sleepUserid?`/api/sleep/${sleepUserid}`: null, fetcher)
 
 
   return (
@@ -62,17 +69,25 @@ export default function Home() {
                   onChange={(e) => setWindowsize(Number(e.target.value))} 
                 />
                 <div className="flex flex-col"><div className="flex items-baseline"><Checkbox onCheckedChange={()=> {setHrshow(!hrshow)} }/> <h3 className="p-2">disable raw heart rate</h3> </div>
-                <DatePickerWithRange/></div>
+                <div className="mr-5"><DatePickerWithRange/></div></div>
                 
               </div>
             </section>
             {content}
           </section>
         </TabsContent>
-        <TabsContent value="slac">Activity and Sleep
+        <TabsContent value="slac">
         
-        <section className="w-screen">
-        <ECGPlot data={sleepData} />
+        <section className="flex flex-col items-center w-screen">
+          <div>Sleep stages Probabilities</div>
+        <ComboboxDemo userid={sleepUserid} setUserid={setSleepuserid} />
+          {sleepUserid? 
+          isSleepL? <div>Loading...</div>: <ECGPlot data={sleepData} />
+        :
+
+        <div>select user id</div>
+        } 
+        
         </section>
 
         </TabsContent>

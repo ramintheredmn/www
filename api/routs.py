@@ -160,31 +160,26 @@ def getMa(windowsize,userid,time):
         return jsonify({"error" : str(e)}), 500
     return jsonify({"ma": ma, 'timestampMA': timestamps})
 
-@app.route("/api/sleep")
-def slllllllleeeeeep():
-    data=[
-    {'TimeStamp': '1690409880', 'HeartRate': '55'},
-    {'TimeStamp': '1690410000', 'HeartRate': '60'},
-    {'TimeStamp': '1690410120', 'HeartRate': '65'},
-    {'TimeStamp': '1690410300', 'HeartRate': '62'},
-    {'TimeStamp': '1690410600', 'HeartRate': '59'},
-    {'TimeStamp': '1690410900', 'HeartRate': '58'},
-    {'TimeStamp': '1690411200', 'HeartRate': '61'},
-    {'TimeStamp': '1690411320', 'HeartRate': '56'},
-    {'TimeStamp': '1690411380', 'HeartRate': '52'},
-    {'TimeStamp': '1690411440', 'HeartRate': '50'},
-    {'TimeStamp': '1690411500', 'HeartRate': '56'},
-    {'TimeStamp': '1690411560', 'HeartRate': '58'},
-    {'TimeStamp': '1690411620', 'HeartRate': '60'},
-    {'TimeStamp': '1690411680', 'HeartRate': '65'},
-    {'TimeStamp': '1690412740', 'HeartRate': '60'},
-    {'TimeStamp': '1690412800', 'HeartRate': '62'},
-    {'TimeStamp': '1690413800', 'HeartRate': '62'},
-    {'TimeStamp': '1690467600', 'HeartRate': '62'}
-    ]
-    final_rec , combined_stages_pred , stages_mode = sleepanalyse(data)
-    str_final = str(final_rec)
-    return jsonify({"finalrec": str_final, "combined": combined_stages_pred.tolist(), "stage": (stages_mode)})
+
+
+#route for sleep stage detecting
+@app.route("/api/sleep/<int:userid>")
+def slllllllleeeeeep(userid):
+
+    try:
+        data_dicts = extract_selectedUser_data(userid, 43200)
+        timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
+        heart_rates = [data['HEART_RATE'] for data in data_dicts]
+
+        combined_data = [{'TimeStamp': str(timestamp), 'HeartRate': str(heart_rate)} for timestamp, heart_rate in zip(timestamps, heart_rates)]
+        combined_stages_pred = sleepanalyse(combined_data)[1]
+
+    except Exception as e:
+        return jsonify({"error" : str(e)}), 500
+
+    
+    
+    return jsonify({"combined": combined_stages_pred.tolist(), "timestamp": timestamps})
 
 
 

@@ -32,7 +32,15 @@ export default function Chart(props: {
         restore: {}
       }
     },
-    tooltip: {},
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+          type: 'cross',
+      },
+  },
+  legend: {
+    data: ['Heartrate', 'MovingAverage'],
+},
 
     xAxis: {
       type: "time"
@@ -64,7 +72,7 @@ export default function Chart(props: {
         data: props.show?props.timestamp?.map((v, i) => [Number(v) * 1000, Number(props.heartrate[i])]): null
       },
 	  {
-        name: 'Moving Average',
+        name: 'MovingAverage',
 		symbol: 'none',
 
         type: 'line',
@@ -72,8 +80,8 @@ export default function Chart(props: {
       }
     ]
   };
-console.log(props.heartrate)
-console.log(props.ma)
+//console.log(props.heartrate)
+//console.log(props.ma)
 
 	return (
 		<ReactECharts
