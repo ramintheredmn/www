@@ -1,31 +1,26 @@
-import traceback
-from flask import Flask, render_template, request, url_for, redirect, send_from_directory, jsonify, session # importing this session object to access a variable between routs
+
+from flask import Flask, render_template, request, url_for, redirect, send_from_directory, jsonify, session, abort # importing this session object to access a variable between routs
 from api.database import engine
 from api.dataanalyze import MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, extract_selectedUser_data, get_latest_timestamp,extract_selected_userid_data_withDates
 from sqlalchemy import text
 from datetime import datetime
-from api import app
+from api import app, apiK
 from sqlalchemy.orm import sessionmaker
-import json
-import pytz
+from api.slllllllleeeeeep import sleepanalyse
 
 @app.route('/')
 def index():
 	return app.send_static_file('index.html')
 
-# @app.route('/chartpage')
-# def chart():
-# 	return app.send_static_file('chartpage.html')
-
-# @app.route('/about')
-# def about():
-# 	return app.send_static_file('about.html')
 
 @app.route('/api/useridlist')
 def test_next():
+
     user_ids_ = distinct_userIdExtract_extract_from_table()
     user_ids = [user_id_a['USER_ID'] for user_id_a in user_ids_] # appending all the recevied usesr_ids into a list (raw data : {USER_ID : "..."} ---> this list :["....", "...."])
-
+    # api_key = request.headers.get('Authorization')
+    # if not api_key or api_key.split(" ")[1] != apiK:
+    #     abort(401)
     return jsonify({"user_ids" : user_ids})
 
 Session = sessionmaker(bind=engine)
@@ -165,6 +160,31 @@ def getMa(windowsize,userid,time):
         return jsonify({"error" : str(e)}), 500
     return jsonify({"ma": ma, 'timestampMA': timestamps})
 
+@app.route("/api/sleep")
+def slllllllleeeeeep():
+    data=[
+    {'TimeStamp': '1690409880', 'HeartRate': '55'},
+    {'TimeStamp': '1690410000', 'HeartRate': '60'},
+    {'TimeStamp': '1690410120', 'HeartRate': '65'},
+    {'TimeStamp': '1690410300', 'HeartRate': '62'},
+    {'TimeStamp': '1690410600', 'HeartRate': '59'},
+    {'TimeStamp': '1690410900', 'HeartRate': '58'},
+    {'TimeStamp': '1690411200', 'HeartRate': '61'},
+    {'TimeStamp': '1690411320', 'HeartRate': '56'},
+    {'TimeStamp': '1690411380', 'HeartRate': '52'},
+    {'TimeStamp': '1690411440', 'HeartRate': '50'},
+    {'TimeStamp': '1690411500', 'HeartRate': '56'},
+    {'TimeStamp': '1690411560', 'HeartRate': '58'},
+    {'TimeStamp': '1690411620', 'HeartRate': '60'},
+    {'TimeStamp': '1690411680', 'HeartRate': '65'},
+    {'TimeStamp': '1690412740', 'HeartRate': '60'},
+    {'TimeStamp': '1690412800', 'HeartRate': '62'},
+    {'TimeStamp': '1690413800', 'HeartRate': '62'},
+    {'TimeStamp': '1690467600', 'HeartRate': '62'}
+    ]
+    final_rec , combined_stages_pred , stages_mode = sleepanalyse(data)
+    str_final = str(final_rec)
+    return jsonify({"finalrec": str_final, "combined": combined_stages_pred.tolist(), "stage": (stages_mode)})
 
 
 

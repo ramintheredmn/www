@@ -22,7 +22,7 @@ import {
 export function ComboboxDemo({userid, setUserid}:any) {
     const [ids, setIds] = React.useState([])
     React.useEffect(()=>{
-        fetch("http://127.0.0.1:5000/api/useridlist")
+        fetch("/api/useridlist")
             .then((r)=>r.json())
             .then((data)=> setIds(data['user_ids']))
         
@@ -48,7 +48,7 @@ export function ComboboxDemo({userid, setUserid}:any) {
       <PopoverContent className="w-[200px] p-0">
         <Command>
           <CommandInput placeholder="Search user id..." />
-          <CommandEmpty>No framework found.</CommandEmpty>
+          <CommandEmpty>No user id found</CommandEmpty>
           <CommandGroup>
             {ids.map((id, index) => (
               <CommandItem

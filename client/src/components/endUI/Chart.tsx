@@ -4,10 +4,11 @@ import { useState, useEffect } from 'react';
 export default function Chart(props: {
 	heartrate: number[];
 	timestamp: number[];
-	ma :number[]
+	ma :number[];
+  show: boolean
 
   }) {
-
+  
 	const [height, setHeight] = useState(window.innerHeight - 250);
 
 	useEffect(() => {
@@ -57,9 +58,10 @@ export default function Chart(props: {
       {
         name: 'Heartrate',
 		symbol: 'none',
+    
 
         type: 'line',
-        data: props.timestamp?.map((v, i) => [Number(v) * 1000, Number(props.heartrate[i])])
+        data: props.show?props.timestamp?.map((v, i) => [Number(v) * 1000, Number(props.heartrate[i])]): null
       },
 	  {
         name: 'Moving Average',
