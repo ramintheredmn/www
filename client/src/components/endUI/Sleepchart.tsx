@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactECharts from 'echarts-for-react';
-import * as echarts from 'echarts'
 
 // type data ={
 //     "combined": [Number[]]
@@ -9,7 +8,7 @@ import * as echarts from 'echarts'
 
 const ECGPlot = ({ data }: any) => {
 
-    if (!data || !data.combined || !data.timestamp) {
+    if (!data || !data.combined || !data.donkey) {
         return <div>Loading...</div>;
       }
     // Parse the combined data
@@ -17,10 +16,10 @@ const ECGPlot = ({ data }: any) => {
 
     // Extract timestamps, wake, rem, and nrem data
     // using the seprate timestamp list for x axis
-    const timestamps:Number[] = data?.timestamp
-    const wakeData:Number[]  = combined?.map((entry: Number[]) => entry[3]);
-    const remData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
-    const nremData:Number[]  = combined?.map((entry: Number[]) => entry[2]);
+    const timestamps:Number[] = data?.donkey;
+    const wakeData:Number[]  = combined?.map((entry: Number[]) => entry[2]);
+    const sleepData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
+    // const nremData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
 
     // console.log(data)
 
@@ -34,10 +33,11 @@ const ECGPlot = ({ data }: any) => {
             },
         },
         legend: {
-            data: ['Wake', 'REM', 'NREM'],
+            data: ['Wake', 'Sleep'],
         },
         xAxis: {
             type: 'time',
+            
         },
         yAxis: {
             type: 'value',
@@ -70,10 +70,10 @@ const ECGPlot = ({ data }: any) => {
                     focus: 'series'
                   },
 
-                data: timestamps.map((v,r) => [Number(v)*1000, wakeData[r]]),
+                data: timestamps?.map((v,r)=>[Number(v)*1000, wakeData[r]])
             },
             {
-                name: 'REM',
+                name: 'Sleep',
                 type: 'line',
                 stack: 'percentage',
                 areaStyle: {
@@ -85,27 +85,27 @@ const ECGPlot = ({ data }: any) => {
                   },
                 symbol: 'none',
 
-                data: timestamps.map((v,r) => [Number(v)*1000, remData[r]]),
+                data: timestamps?.map((v,r)=>[Number(v)*1000, sleepData[r]])
             },
-            {
-                name: 'NREM',
-                type: 'line',
-                stack: 'percentage',
-                areaStyle: {
-                    opacity: 1,
+            // {
+            //     name: 'NREM',
+            //     type: 'line',
+            //     stack: 'percentage',
+            //     areaStyle: {
+            //         opacity: 1,
 
-                  },
-                  emphasis: {
-                    focus: 'series'
-                  },
-                symbol: 'none',
+            //       },
+            //       emphasis: {
+            //         focus: 'series'
+            //       },
+            //     symbol: 'none',
 
-                data: timestamps.map((v,r) => [Number(v)*1000, nremData[r]]),
-            },
+            //     data: timestamps?.map((v,r)=>[Number(v)*1000, nremData[r]])
+            // },
         ],
     };
 
-    return <ReactECharts option={option} style={{ height: 500, width: '100%'  }} />;
+    return <ReactECharts option={option} style={{ height: 0.5*innerHeight, width: '100%'  }} />;
 };
 
 export default ECGPlot;

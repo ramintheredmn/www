@@ -25,9 +25,9 @@ data = [
     {'TimeStamp': '1690467600', 'HeartRate': '62'}
 ]
 
-clf = load_classifier("wrn-gru-mesa-weighted", "SleepECG")
+clf = load_classifier("ws-gru-mesa", "SleepECG")
 def sleepanalyse(data , min_treshhold = 1500 , sleep_stage_duration = 60) : 
-    clf = load_classifier("wrn-gru-mesa-weighted", "SleepECG")  # or use any other classifier you want
+    clf = load_classifier("ws-gru-mesa", "SleepECG")  # or use any other classifier you want
     # Convert to NumPy arrays
     timestamps = [int(d['TimeStamp']) for d in data]
     heart_rates = [int(d['HeartRate']) for d in data]
@@ -92,14 +92,14 @@ def sleepanalyse(data , min_treshhold = 1500 , sleep_stage_duration = 60) :
             print(f"Skipping segment starting at index {start_idx} because of not enough data.")
             time_interval = timestamps[end_idx + 1] - timestamps[end_idx]
             num_placeholder_blocks = int(time_interval / sleep_stage_duration)
-            placeholder_array = np.array([0.0, 0.0, 0.0, 0.0], dtype=np.float32)
+            placeholder_array = np.array([0.0, 0.0, 0.0], dtype=np.float32)
             combined_stages_pred.extend([placeholder_array] * num_placeholder_blocks)
         
         # Add placeholder for the long interval
         #the place holder is [0,0,0,0]
         time_interval = timestamps[end_idx + 1] - timestamps[end_idx]
         num_placeholder_blocks = int(time_interval / sleep_stage_duration)
-        placeholder_array = np.array([0.0, 0.0, 0.0, 0.0], dtype=np.float32)
+        placeholder_array = np.array([0.0, 0.0, 0.0], dtype=np.float32)
         combined_stages_pred.extend([placeholder_array] * num_placeholder_blocks)
         start_idx = end_idx + 1
 
@@ -127,7 +127,7 @@ def sleepanalyse(data , min_treshhold = 1500 , sleep_stage_duration = 60) :
             print(f"Skipping the last segment because of not enough data.")
             time_interval = timestamps[-1] - timestamps[start_idx]
             num_placeholder_blocks = int(time_interval / sleep_stage_duration)
-            placeholder_array = np.array([0.0, 0.0, 0.0, 0.0], dtype=np.float32)
+            placeholder_array = np.array([0.0, 0.0, 0.0], dtype=np.float32)
             combined_stages_pred.extend([placeholder_array] * num_placeholder_blocks)
 
 
@@ -148,4 +148,7 @@ def sleepanalyse(data , min_treshhold = 1500 , sleep_stage_duration = 60) :
     stages_mode=clf.stages_mode
 
     return final_rec , combined_stages_pred , stages_mode
+
+
+#print(sleepanalyse(data)[1])
 

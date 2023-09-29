@@ -8,6 +8,7 @@ import { useState } from "react";
 import { DatePickerWithRange } from "@/components/endUI/Datepicker";
 import ECGPlot from "@/components/endUI/Sleepchart";
 import axios from 'axios'
+import Stepchart from "@/components/endUI/Stepchart";
 
 const preFetcher = (url:string) => fetch(url).then(res=>res.json())
 const fetcher = async (url:string) => {
@@ -31,7 +32,9 @@ export default function Home() {
   const [windowsize, setWindowsize] = useState(5);
   const { data: userMa, error: errorma, isLoading: isMAloading } = Fetch(maon?`/api/windowsize/${userid}/${windowsize}/86400`: null);
   const [hrshow, setHrshow] = useState(true)
-  console.log(userMa)
+  const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(sleepUserid? `/api/steps/${sleepUserid}`: null)
+  const [stepShow, setStepshow] = useState(false)
+  //console.log(userMa)
   let content;
   if (!userid) {
     content = <div><h1>Select user id</h1></div>;
@@ -48,46 +51,71 @@ export default function Home() {
 
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-5">
-      <Tabs defaultValue="heartrate" className="flex flex-col items-center w-screen rounded">
+    <main className="w-[70vh]screen h-screen  justify-items-center content-center p-0 mt-2">
+      <Tabs defaultValue="heartrate" className="flex flex-col justify-items-center items-center w-[70vh]screen rounded">
         <TabsList>
           <TabsTrigger value="heartrate">Heart Rate Analyze</TabsTrigger>
           <TabsTrigger value="slac">Activity and Sleep</TabsTrigger>
         </TabsList>
         <TabsContent value="heartrate">
-          <section className="flex flex-col h-full items-center w-screen">
-            <section className="flex flex-row justify-evenly items-baseline">
+          <section className="flex flex-col h-full items-center content-center w-screen">
+            <section id="chartoptions"  className="flex flex-wrap w-[80vh] items-center justify-between">
               <div className="mt-2 p-2">
                 <ComboboxDemo userid={userid} setUserid={setUserid} />
               </div>
-              <div className="flex flex-row space-x-2 items-baseline">
+              <div className="">
                 <Checkbox onCheckedChange={() => setMaon(!maon)} />
                 <input 
-                  className="w-20 p-2 rounded-sm bg-black text-white" 
+                  className="w-20 ml-3 p-2 rounded-sm bg-black text-white" 
                   type='number' 
                   value={windowsize} 
                   onChange={(e) => setWindowsize(Number(e.target.value))} 
-                />
-                <div className="flex flex-col"><div className="flex items-baseline"><Checkbox onCheckedChange={()=> {setHrshow(!hrshow)} }/> <h3 className="p-2">disable raw heart rate</h3> </div>
-                <div className="mr-5"><DatePickerWithRange/></div></div>
-                
-              </div>
+                /></div>
+
+                <div className="flex flex-row items-center justify-center ml-3">
+                  <Checkbox onCheckedChange={()=> {setHrshow(hrshow?false:true)} }/>
+                  <p className="flex-grow w-20 ml-3"> disable raw heart rate  </p> 
+                  </div>
+                <div className="flex-1  w-25"><DatePickerWithRange/></div>
+              
             </section>
-            {content}
+            <div className="h-[70vh]screen w-[70vh]screen content-center self-center place-content-center place-items-center place-self-center">{content}</div>
+            
           </section>
         </TabsContent>
         <TabsContent value="slac">
         
-        <section className="flex flex-col items-center w-screen">
-          <div>Sleep stages Probabilities</div>
-        <ComboboxDemo userid={sleepUserid} setUserid={setSleepuserid} />
-          {sleepUserid? 
-          isSleepL? <div>Loading...</div>: <ECGPlot data={sleepData} />
-        :
+        <section className="flex flex-col items-center content-center w-screen">
+          
+          <section className="flex flex-row items-center justify-between gap-2">
+          <ComboboxDemo userid={sleepUserid} setUserid={setSleepuserid} />
+          <Checkbox onCheckedChange={()=> setStepshow(stepShow?false:true)}/>
+          <p>show steps data</p>
 
-        <div>select user id</div>
-        } 
-        
+
+          </section>
+          <div className="h-[70vh]screen w-[70vh]screen content-center self-center place-content-center place-items-center place-self-center">
+            {sleepUserid? 
+              isSleepL? <div>Loading...</div>
+              :
+              <div className="w-screen"><ECGPlot data={sleepData} /></div>
+              :
+              <div>select user id</div>
+              }
+            {sleepUserid?
+
+              stepShow?
+              stepLoading? <div>Loading...</div>
+              :
+              <div className="w-screen"><Stepchart steps={stepData?.steps} timestamp={stepData?.timestamps}/></div>
+              :
+              <div> </div>
+              :
+              null
+              }
+
+          </div>
+
         </section>
 
         </TabsContent>

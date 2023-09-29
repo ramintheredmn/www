@@ -1,11 +1,9 @@
 import ReactECharts from 'echarts-for-react';
-import { useState, useEffect } from 'react';
 
-export default function Chart(props: {
-	heartrate: number[];
+export default function Stepchart(props: {
+	steps: number[];
 	timestamp: number[];
-	ma :number[];
-  show: boolean
+	
 
   }) {
   
@@ -13,8 +11,7 @@ export default function Chart(props: {
   const option = {
 
     toolbox: {
-    top: 20,
-	  right: 400,
+	  right: 100,
       feature: {
         saveAsImage: {},
         dataZoom: {},
@@ -28,7 +25,7 @@ export default function Chart(props: {
       },
   },
   legend: {
-    data: ['Heartrate', 'MovingAverage'],
+    data: ['steps'],
 },
 
     xAxis: {
@@ -36,9 +33,7 @@ export default function Chart(props: {
     },
     yAxis: {
       type: 'value',
-	  min: 40,
-	  
-	  
+
     },
     dataZoom: [
       {
@@ -53,29 +48,23 @@ export default function Chart(props: {
     ],
     series: [
       {
-        name: 'Heartrate',
+        name: 'steps',
 		symbol: 'none',
     
 
-        type: 'line',
-        data: props.show?props.timestamp?.map((v, i) => [Number(v) * 1000, Number(props.heartrate[i])]): null
+        type: 'bar',
+        data: props.timestamp?.map((v, i) => [Number(v) * 1000, Number(props.steps[i])])
       },
-	  {
-        name: 'MovingAverage',
-		symbol: 'none',
 
-        type: 'line',
-        data: props.ma&&props.timestamp?.map((v, i) => [Number(v) * 1000, Number(props.ma[i])])
-      }
     ]
   };
-//console.log(props.heartrate)
+//console.log(props.steps)
 //console.log(props.ma)
 
 	return (
 		<ReactECharts
 			option={option}
-			style={{ height: innerHeight-250, width: '100%' }}
+			style={{ height: 0.45*innerHeight, width: '100%'  }}
 			lazyUpdate={true}
 		/>
 	);

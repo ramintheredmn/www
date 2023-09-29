@@ -173,13 +173,32 @@ def slllllllleeeeeep(userid):
 
         combined_data = [{'TimeStamp': str(timestamp), 'HeartRate': str(heart_rate)} for timestamp, heart_rate in zip(timestamps, heart_rates)]
         combined_stages_pred = sleepanalyse(combined_data)[1]
+        eshah = len(combined_stages_pred.tolist())
+        mytss = []
+        first_timestamp = timestamps[0]
+        for i in range(eshah):
+            mytss.append(first_timestamp)
+            first_timestamp+=30
+            i= i+1
+
 
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
 
     
-    
-    return jsonify({"combined": combined_stages_pred.tolist(), "timestamp": timestamps})
+    #return jsonify({"data": combined_data})
+    return jsonify({"combined": combined_stages_pred.tolist(), "donkey": mytss})
+
+@app.route('/api/steps/<int:userid>')
+def steps(userid):
+    try:
+        data_dicts = extract_selectedUser_data(userid, 43200)
+        timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
+        steps = [data['STEPS'] for data in data_dicts]
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({"steps": steps, "timestamps": timestamps})
 
 
 
