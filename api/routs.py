@@ -192,7 +192,7 @@ def slllllllleeeeeep(userid):
 @app.route('/api/steps/<int:userid>')
 def steps(userid):
     try:
-        data_dicts = extract_selectedUser_data(userid, 43200)
+        data_dicts = extract_selectedUser_data(userid, 86400)
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         steps = [data['STEPS'] for data in data_dicts]
     except Exception as e:

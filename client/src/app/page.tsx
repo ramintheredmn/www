@@ -1,19 +1,19 @@
 'use client'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useSWR, {preload} from 'swr';
-import Chart from "@/components/endUI/Chart";
-import { ComboboxDemo } from "@/components/endUI/UseridCombobox";
+import Chart from "@/components/ui/endUI/Chart";
+import { ComboboxDemo } from "@/components/ui/endUI/UseridCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useState } from "react";
-import { DatePickerWithRange } from "@/components/endUI/Datepicker";
-import ECGPlot from "@/components/endUI/Sleepchart";
-import axios from 'axios'
-import Stepchart from "@/components/endUI/Stepchart";
+import { useEffect, useState } from "react";
+import { DatePickerWithRange } from "@/components/ui/endUI/Datepicker";
+import ECGPlot from "@/components/ui/endUI/Sleepchart";
+import Stepchart from "@/components/ui/endUI/Stepchart";
+
 
 const preFetcher = (url:string) => fetch(url).then(res=>res.json())
 const fetcher = async (url:string) => {
-  const response = await axios.get(url);
-  return response.data;
+  const response = await fetch(url);
+  return response.json();
 };
 function Fetch(url: string| null): any {
   const { data, error, isLoading } = useSWR(url? url: null, fetcher, { refreshInterval: 60*5*1000 });
@@ -46,7 +46,11 @@ export default function Home() {
     content = <div className="w-screen"><Chart heartrate={userData?.heartrate} timestamp={userData?.timestamps} ma={userMa?.ma} show={hrshow} /></div>;
   }
 
-  preload(userid?`/api/sleep/${userid}`: null, preFetcher )
+
+  useEffect(()=> {
+    preload(`/api/sleep/${userid}`, preFetcher )
+  }, [userid])
+  
   const {data: sleepData, error: sleepError, isLoading: isSleepL} = useSWR(sleepUserid?`/api/sleep/${sleepUserid}`: null, fetcher)
 
 
