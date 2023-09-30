@@ -244,4 +244,4 @@ client/next-env.d.ts
 client/package-lock.json
 client/bun.lockb
 .bun
-client/.bun
+client/.bun/
