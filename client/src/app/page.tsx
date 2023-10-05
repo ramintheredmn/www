@@ -12,6 +12,7 @@ import ECGPlot from "@/components/ui/endUI/Sleepchart";
 import Stepchart from "@/components/ui/endUI/Stepchart";
 import { Button } from "@/components/ui/button";
 import { AlertDialogDemo } from "@/components/ui/endUI/Calender";
+import { Tabbedcard } from "@/components/ui/endUI/Logincard";
 
 
 const preFetcher = (url:string) => fetch(url).then(res=>res.json())
@@ -28,7 +29,16 @@ function Fetch(url: string| null): any {
   };
 }
 
+const info = {
+  userid: 'admin',
+  password: 'admin',
+  role: 'admin',
+}
+
+
 export default function Home() {
+
+  const [seecontent, setSeecontent] = useState(false);
   const [userid, setUserid] = useState("");
 
   const {data: dataDate, error: dateError, isLoading: dateLoading} = Fetch(userid? `/api/latest_timestamp/${userid}`:null)
@@ -45,6 +55,15 @@ export default function Home() {
   const [hrshow, setHrshow] = useState(true)
   const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(userid? `/api/steps/${userid}`: null)
   const [stepShow, setStepshow] = useState(false)
+
+
+  const [sublogininfo, setSublogininfo] = useState({
+    useridLogin: '',
+    password: '',
+    role: '',
+    demograph:{}
+  })
+
 
 
   //console.log(userMa)
@@ -65,20 +84,33 @@ export default function Home() {
 
 
   return (
-    <main className="w-[70vh]screen h-screen  justify-items-center content-center p-0 mt-2">
-      <Tabs defaultValue="heartrate" className="flex flex-col justify-items-center items-center w-[70vh]screen rounded">
+    <>
+    
+    <main className=" flex w-screen h-screen justify-center content-center p-0 mt-2">
+      {!seecontent?
+
+      <Tabbedcard setSub={setSublogininfo} sub={sublogininfo} setSeecontent={setSeecontent} />
+
+
+      :
+        (sublogininfo.useridLogin == 'admin' && sublogininfo.password == 'admin')?
+        
+        
+          
+      <Tabs defaultValue="heartrate" className="flex flex-col items-center w-3/4 rounded">
         <TabsList>
           <TabsTrigger value="heartrate">Heart Rate Analyze</TabsTrigger>
           <TabsTrigger value="slac">Activity and Sleep</TabsTrigger>
         </TabsList>
+        
         <TabsContent value="heartrate">
           <section className="flex flex-col h-full items-center content-center w-screen">
             <section id="chartoptions"  className="flex flex-col p-2 items-center justify-center">
-              <div className="flex flex-row">
+              <div className="flex flex-row items-center g">
                 <ComboboxDemo userid={userid} setUserid={setUserid} />
                 <div className="flex flex-col items-center">
-                <Checkbox onCheckedChange={()=> {}}/>
-                <p>use calender</p>
+                
+                
                 </div>
                 
                 <AlertDialogDemo date={date} setDate={setDate} calendershow={true}/>
@@ -139,7 +171,19 @@ export default function Home() {
         </section>
 
         </TabsContent>
+        
       </Tabs>
+      
+      :
+      <section className="flex flex-col gap-2">
+
+          <div>You dont have the permission</div>
+          <Button onClick={()=> setSeecontent(false)}>Back to login</Button>
+      </section>
+      
+    }
+    
     </main>
+    </>
   );
 }
