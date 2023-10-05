@@ -122,10 +122,9 @@ def window_size():
 
     return jsonify({"window_size": window_sizee})
 
-@app.route('/api/latest_timestamp')
-def lateTime():
-     user_id = request.args.get('userid')
-     maxTimestamp, minTimestamp = get_latest_timestamp(user_id)
+@app.route('/api/latest_timestamp/<int:userid>')
+def lateTime(userid):
+     maxTimestamp, minTimestamp = get_latest_timestamp(userid)
 
      return jsonify({'maxTimestamp' : datetime.fromtimestamp(int(maxTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S'), 'minTimestamp': datetime.fromtimestamp(int(minTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S')})
 
@@ -134,19 +133,22 @@ def lateTime():
 
 
 
-@app.route('/api/heartrate/<int:userid>/<int:time>')
-def get_heartrate(userid, time):
-    
+@app.route('/api/heartrate/<int:userid>')
+def get_heartrate(userid):
     try:
-        data_dicts = extract_selectedUser_data(userid, time)
+        dt_start = int(request.args.get('startdate')) - 2.5*60*60
+        dt_end = int(request.args.get('enddate')) -2.5*60*60
+        data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
+        
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
-        session['heartrate'] = heart_rates
-        session['selected'] = userid
+
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
 
     return jsonify({"heartrate": heart_rates, "timestamps": timestamps})
+
+
 
 @app.route('/api/windowsize/<int:userid>/<int:windowsize>/<int:time>')
 def getMa(windowsize,userid,time):
@@ -192,6 +194,7 @@ def slllllllleeeeeep(userid):
 @app.route('/api/steps/<int:userid>')
 def steps(userid):
     try:
+        
         data_dicts = extract_selectedUser_data(userid, 86400)
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         steps = [data['STEPS'] for data in data_dicts]
@@ -200,6 +203,20 @@ def steps(userid):
 
     return jsonify({"steps": steps, "timestamps": timestamps})
 
+@app.route('/api/hrdate', methods=["POST"])
+def date():
+    try:
+        received_date = request.get_json()
+        if  not received_date:
+            return jsonify({"error": "No date receiveid"})
+        session['date'] = received_date
+
+    except Exception as e:
+        return jsonify({"error": "error in processeing date"})
+    
+    return({"success": "data received successfully"})
+        
+    
 
 
 
@@ -252,40 +269,4 @@ def get_data():
 
     return jsonify({"timestamps": timestamps, "heart_rates": heart_rates, "heart_rates_MA": heart_rates_MA, "steps": steps})
 
-
-@app.route('/api/calenderTimeinterval')
-def calTime():
-         
-
-    selected_user_id = session.get('selected_user_id')
-    selected_user_id = request.args.get('userid')
-    entered_window_size = request.args.get('windowsize')
-    start_date = datetime.fromisoformat(request.args.get('startdate')).timestamp()
-    end_date = datetime.fromisoformat(request.args.get('enddate')).timestamp()
-    if  selected_user_id == None:
-        return jsonify({"error" : "User id not selected"}), 400   # using flask jasinify to send real json to javasctrpt
-   
-
-    #tehran = pytz.timezone('Asia/Tehran')
-
-    try:
-        data_dicts = extract_selected_userid_data_withDates(selected_user_id, startDate=start_date, endDate=end_date)
-        timestamps = [datetime.fromtimestamp(int(data['TIMESTAMP']) + 2.5*60*60).strftime('%Y-%m-%d %H:%M:%S') for data in data_dicts]
-        heart_rates = [data['HEART_RATE'] for data in data_dicts]
-        window_sizee = 5
-        if 'window_size' in session:
-            
-            window_sizee = session['window_size']
-        elif entered_window_size:
-             window_sizee = entered_window_size
-        else:
-            window_sizee = 5
-        
-        heart_rates_MA= calculating_moving_average(heart_rates,int(window_sizee))
-        
-    except Exception as e:
-        return jsonify({"error" : str(e)}), 500
-
-
-    return jsonify({"timestamps": timestamps, "heart_rates": heart_rates, "heart_rates_MA": heart_rates_MA})
      
