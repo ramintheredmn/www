@@ -37,6 +37,7 @@ export default function Home() {
   const [userid, setUserid] = useState("");
 
   const {data: dataDate, error: dateError, isLoading: dateLoading} = Fetch(userid? `/api/latest_timestamp/${userid}`:null)
+  console.log(dataDate)
   const [date, setDate] = useState({
     from: new Date(),
     to: endOfDay(new Date()),
@@ -146,6 +147,7 @@ export default function Home() {
           {/* <ComboboxDemo userid={sleepUserid} setUserid={setSleepuserid} /> */}
           <Checkbox onCheckedChange={()=> setStepshow(stepShow?false:true)}/>
           <p>show steps data</p>
+          <AlertDialogDemo date={date} setDate={setDate} calendershow={true}/>
 
 
           </section>
@@ -153,7 +155,9 @@ export default function Home() {
             {userid? 
               isSleepL? <div>Loading...</div>
               :
-              <div className="w-screen"><ECGPlot data={sleepData} /></div>
+              <div className="w-screen">
+                
+                <ECGPlot data={sleepData} /></div>
               :
               <div>select user id</div>
               }

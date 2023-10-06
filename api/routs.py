@@ -151,11 +151,11 @@ def slllllllleeeeeep(userid):
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
         combined_data = [{'TimeStamp': str(timestamp), 'HeartRate': str(heart_rate)} for timestamp, heart_rate in zip(timestamps, heart_rates)]
-        combined_stages_pred = sleepanalyse(combined_data)[1]
-        eshah = len(combined_stages_pred.tolist())
+        combined_stages_pred = sleepanalyse(combined_data)
+        n_tss = len(combined_stages_pred.tolist())
         mytss = []
         first_timestamp = timestamps[0]
-        for i in range(eshah):
+        for i in range(n_tss):
             mytss.append(first_timestamp)
             first_timestamp+=30
             i= i+1
