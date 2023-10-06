@@ -1,5 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
+/.vscode
+/.bun
+/.vscode-server
+/.keras
+/.vscode-server-insiders
 # Byte-compiled / optimized / DLL files
 snap/
 yarn.lock
