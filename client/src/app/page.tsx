@@ -15,11 +15,13 @@ import { AlertDialogDemo } from "@/components/ui/endUI/Calender";
 import { Tabbedcard } from "@/components/ui/endUI/Logincard";
 
 
-const preFetcher = (url:string) => fetch(url).then(res=>res.json())
 const fetcher = async (url:string) => {
   const response = await fetch(url);
   return response.json();
 };
+
+
+
 function Fetch(url: string| null): any {
   const { data, error, isLoading } = useSWR(url? url: null, fetcher, { refreshInterval: 60*5*1000 });
   return {
@@ -28,13 +30,6 @@ function Fetch(url: string| null): any {
     isLoading,
   };
 }
-
-const info = {
-  userid: 'admin',
-  password: 'admin',
-  role: 'admin',
-}
-
 
 export default function Home() {
 
@@ -51,9 +46,9 @@ export default function Home() {
   console.log(dataDate)
   const [maon, setMaon] = useState(false);
   const [windowsize, setWindowsize] = useState(5);
-  const { data: userMa, error: errorma, isLoading: isMAloading } = Fetch(maon?`/api/windowsize/${userid}/${windowsize}/86400`: null);
+  const { data: userMa, error: errorma, isLoading: isMAloading } = Fetch(maon?`/api/windowsize/${userid}/${windowsize}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null);
   const [hrshow, setHrshow] = useState(true)
-  const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(userid? `/api/steps/${userid}`: null)
+  const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(userid? `/api/steps/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
   const [stepShow, setStepshow] = useState(false)
 
 
@@ -80,45 +75,49 @@ export default function Home() {
 
 
   
-  const {data: sleepData, error: sleepError, isLoading: isSleepL} = useSWR(userid?`/api/sleep/${userid}`: null, fetcher)
+  const {data: sleepData, error: sleepError, isLoading: isSleepL} = useSWR(userid?`/api/sleep/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null, fetcher, { refreshInterval: 60*5*1000 });
 
 
   return (
+    
     <>
     
-    <main className=" flex w-screen h-screen justify-center content-center p-0 mt-2">
+    <main className="flex flex-col items-center w-screen h-screen p-0 mt-2 sticky">
+
+
       {!seecontent?
 
-      <Tabbedcard setSub={setSublogininfo} sub={sublogininfo} setSeecontent={setSeecontent} />
+
+      <div className="w-1/2 h-screen">
+        <Tabbedcard setSub={setSublogininfo} sub={sublogininfo} setSeecontent={setSeecontent} />
+
+      </div>
 
 
       :
         (sublogininfo.useridLogin == 'admin' && sublogininfo.password == 'admin')?
         
         
-          
-      <Tabs defaultValue="heartrate" className="flex flex-col items-center w-3/4 rounded">
+      <Tabs defaultValue="heartrate" className="flex flex-col items-center justify-center w-3/4 rounded">
         <TabsList>
           <TabsTrigger value="heartrate">Heart Rate Analyze</TabsTrigger>
           <TabsTrigger value="slac">Activity and Sleep</TabsTrigger>
         </TabsList>
         
         <TabsContent value="heartrate">
-          <section className="flex flex-col h-full items-center content-center w-screen">
-            <section id="chartoptions"  className="flex flex-col p-2 items-center justify-center">
-              <div className="flex flex-row items-center g">
+            <section id="chartoptions"  className="flex flex-col items-center justify-center">
+
+
+              <div className="flex flex-row items-center">
                 <ComboboxDemo userid={userid} setUserid={setUserid} />
-                <div className="flex flex-col items-center">
-                
-                
-                </div>
-                
                 <AlertDialogDemo date={date} setDate={setDate} calendershow={true}/>
               </div>
 
-              <section className="mt-3 flex flex-row items-center justify-center space-x-2">
-                <p>moving average</p>
-                <Checkbox onCheckedChange={() => setMaon(!maon)} />
+
+              <div id="indicators" className="flex flex-row items-center space-x-1">
+
+              <p>moving average</p>
+                <Checkbox onCheckedChange={() => setMaon(maon?false:true)} />
                 <input 
                   className="w-20 ml-3 p-2 rounded-sm bg-black text-white" 
                   type='number' 
@@ -129,11 +128,15 @@ export default function Home() {
                 <Checkbox onCheckedChange={()=> {setHrshow(hrshow?false:true)} }/>
                 <p className="w-20 ml-3"> disable raw heart rate  </p> 
                
-              </section> 
+
+              </div>
+
             </section>
-            <div className="h-[70vh]screen w-[70vh]screen content-center self-center place-content-center place-items-center place-self-center">{content}</div>
+
+
+
+            <div className="flex items-center justify-center">{content}</div>
             
-          </section>
         </TabsContent>
         <TabsContent value="slac">
         
@@ -146,7 +149,7 @@ export default function Home() {
 
 
           </section>
-          <div className="h-[70vh]screen w-[70vh]screen content-center self-center place-content-center place-items-center place-self-center">
+          <div className="flex flex-col items-center justify-center">
             {userid? 
               isSleepL? <div>Loading...</div>
               :
@@ -173,7 +176,7 @@ export default function Home() {
         </TabsContent>
         
       </Tabs>
-      
+
       :
       <section className="flex flex-col gap-2">
 

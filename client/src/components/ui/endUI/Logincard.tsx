@@ -52,7 +52,7 @@ export function Tabbedcard({setSub, sub, setSeecontent}: {setSub: any, sub: any,
   console.log(sub)
 
   return (
-    <Tabs defaultValue="login" className="w-1/4">
+    <Tabs defaultValue="login" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="login">Login</TabsTrigger>
         <TabsTrigger value="sign">Sign up</TabsTrigger>

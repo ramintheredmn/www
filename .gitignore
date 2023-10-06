@@ -1,6 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # Byte-compiled / optimized / DLL files
+setting.json
 snap/
 yarn.lock
 apprun.py
@@ -246,3 +247,4 @@ client/bun.lockb
 .bun
 client/.bun/
 *lock*
+.vscode/settings.json

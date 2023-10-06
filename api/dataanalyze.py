@@ -45,36 +45,40 @@ def distinct_userIdExtract_extract_from_table():  # function to extract userids 
     return dict_userid
 
 # function to extract selected user_is's heart_rate data from table more efficeint than last time with this just a part of table comes from database
-def extract_selectedUser_data(user_id, time):
+# def extract_selectedUser_data(user_id, time):
 
-# sql query in order to execute data from table with respect to user_id and time interval text() function identifies :user_id and :time as variables and should be passed in execute function as dictionary
+# # sql query in order to execute data from table with respect to user_id and time interval text() function identifies :user_id and :time as variables and should be passed in execute function as dictionary
 
-    query = text('''
-        select distinct TIMESTAMP, HEART_RATE, STEPS
-        from MI_BAND_ACTIVITY_SAMPLE 
-        where USER_ID = :user_id
-        and TIMESTAMP >= (
-                 select max(TIMESTAMP) - :time
-                 from MI_BAND_ACTIVITY_SAMPLE
-                 where USER_ID = :user_id
-        );
-    ''')
-    with engine.connect() as conn:
-        # if startdate and enddate:
-        #     resultall = conn.execute(query_2, {'user_id': user_id, 'start_date': startdate, 'end_date': enddate})
-        # else:
-        resultall = conn.execute(query, {'user_id':user_id, 'time':time})
+#     query = text('''
+#         select distinct TIMESTAMP, HEART_RATE, STEPS
+#         from MI_BAND_ACTIVITY_SAMPLE 
+#         where USER_ID = :user_id
+#         and TIMESTAMP >= (
+#                  select max(TIMESTAMP) - :time
+#                  from MI_BAND_ACTIVITY_SAMPLE
+#                  where USER_ID = :user_id
+#         );
+#     ''')
+#     with engine.connect() as conn:
+#         # if startdate and enddate:
+#         #     resultall = conn.execute(query_2, {'user_id': user_id, 'start_date': startdate, 'end_date': enddate})
+#         # else:
+#         resultall = conn.execute(query, {'user_id':user_id, 'time':time})
 
-        res = resultall.fetchall()
+#         res = resultall.fetchall()
         
-        dict_data = [row._asdict() for row in res]
+#         dict_data = [row._asdict() for row in res]
 
-    return dict_data
+#     return dict_data
 
 def extract_selected_userid_data_withDates (userid, startDate, endDate):
+   
+    x = 86400 - (endDate - startDate)
 
+    if endDate - startDate <86400:
+        startDate = startDate - x  
     query_2 = text('''
-        SELECT DISTINCT TIMESTAMP, HEART_RATE 
+        SELECT DISTINCT TIMESTAMP, HEART_RATE, STEPS 
         FROM MI_BAND_ACTIVITY_SAMPLE 
         WHERE USER_ID = :user_id
         AND TIMESTAMP BETWEEN :start_date AND :end_date;
@@ -89,6 +93,26 @@ def extract_selected_userid_data_withDates (userid, startDate, endDate):
     return dict_data
     
 
+def extract_selected_userid_steps_withDates (userid, startDate, endDate):
+   
+    x = 86400 - (endDate - startDate)
+
+    if endDate - startDate <86400:
+        startDate = startDate - x  
+    query_2 = text('''
+        SELECT DISTINCT TIMESTAMP, STEPS 
+        FROM MI_BAND_ACTIVITY_SAMPLE 
+        WHERE USER_ID = :user_id
+        AND TIMESTAMP BETWEEN :start_date AND :end_date;
+    ''')
+    with engine.connect() as conn:
+
+        resultall = conn.execute(query_2, {'user_id':userid, 'start_date': startDate, 'end_date':endDate})
+        res = resultall.fetchall()
+        
+        dict_data = [row._asdict() for row in res]
+
+    return dict_data
 
 
 # function for moving average  
