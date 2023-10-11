@@ -1,5 +1,5 @@
 'use client'
-import { DateRange } from "react-day-picker";
+
 import { addDays, endOfDay, format } from "date-fns"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useSWR, {preload} from 'swr';
@@ -7,13 +7,12 @@ import Chart from "@/components/ui/endUI/Chart";
 import { ComboboxDemo } from "@/components/ui/endUI/UseridCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
-import { DatePickerWithRange } from "@/components/ui/endUI/Datepicker";
 import ECGPlot from "@/components/ui/endUI/Sleepchart";
 import Stepchart from "@/components/ui/endUI/Stepchart";
 import { Button } from "@/components/ui/button";
 import { AlertDialogDemo } from "@/components/ui/endUI/Calender";
 import { Tabbedcard } from "@/components/ui/endUI/Logincard";
-
+import { Chartconfig } from "@/components/ui/endUI/Configchart";
 
 const fetcher = async (url:string) => {
   const response = await fetch(url);
@@ -44,14 +43,14 @@ export default function Home() {
   })
 
   const { data: userData, error, isLoading } = Fetch(userid? `/api/heartrate/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null);
-  console.log(dataDate)
+  //console.log(dataDate)
   const [maon, setMaon] = useState(false);
   const [windowsize, setWindowsize] = useState(5);
   const { data: userMa, error: errorma, isLoading: isMAloading } = Fetch(maon?`/api/windowsize/${userid}/${windowsize}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null);
   const [hrshow, setHrshow] = useState(true)
   const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(userid? `/api/steps/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
-  const [stepShow, setStepshow] = useState(false)
-
+  const [stepcheck, setstepCheck] = useState(false)
+  
 
   const [sublogininfo, setSublogininfo] = useState({
     useridLogin: '',
@@ -65,7 +64,7 @@ export default function Home() {
   //console.log(userMa)
   let content;
   if (!userid) {
-    content = <div><h1>Select user id</h1></div>;
+    content = <div><h1 className="mt-2 text-gray-50">Select user id</h1></div>;
   } else if (isLoading || (maon && isMAloading)) {
     content = <div>Loading...</div>;
   } else if (error || (maon && errorma)) {
@@ -106,32 +105,20 @@ export default function Home() {
         </TabsList>
         
         <TabsContent value="heartrate">
-            <section id="chartoptions"  className="flex flex-col items-center justify-center">
+            <section id="chartoptions"  className="flex flex-col items-center justify-center space-y-3 mt-3">
 
 
-              <div className="flex flex-row items-center">
+              <div className="flex flex-row items-center space-x-1">
                 <ComboboxDemo userid={userid} setUserid={setUserid} />
-                <AlertDialogDemo date={date} setDate={setDate} calendershow={true}/>
+                <AlertDialogDemo date={date} setDate={setDate}/>
               </div>
-
-
-              <div id="indicators" className="flex flex-row items-center space-x-1">
-
-              <p>moving average</p>
-                <Checkbox onCheckedChange={() => setMaon(maon?false:true)} />
-                <input 
-                  className="w-20 ml-3 p-2 rounded-sm bg-black text-white" 
-                  type='number' 
-                  value={windowsize} 
-                  onChange={(e) => setWindowsize(Number(e.target.value))} 
-                />
-                
-                <Checkbox onCheckedChange={()=> {setHrshow(hrshow?false:true)} }/>
-                <p className="w-20 ml-3"> disable raw heart rate  </p> 
-               
-
+              <div>
+                <Chartconfig hrshow={hrshow} setHrshow={setHrshow}
+                             maon={maon} setMaon={setMaon}
+                             windowsize={windowsize} setWindowsize={setWindowsize}
+                             userid={userid}/>
               </div>
-
+              
             </section>
 
 
@@ -145,9 +132,9 @@ export default function Home() {
           
           <section className="flex flex-row items-center justify-between gap-2">
           {/* <ComboboxDemo userid={sleepUserid} setUserid={setSleepuserid} /> */}
-          <Checkbox onCheckedChange={()=> setStepshow(stepShow?false:true)}/>
+          <Checkbox checked={stepcheck} onCheckedChange={()=>setstepCheck(stepcheck?false:true)}/>
           <p>show steps data</p>
-          <AlertDialogDemo date={date} setDate={setDate} calendershow={true}/>
+          <AlertDialogDemo date={date} setDate={setDate}/>
 
 
           </section>
@@ -163,7 +150,7 @@ export default function Home() {
               }
             {userid?
 
-              stepShow?
+              stepcheck?
               stepLoading? <div>Loading...</div>
               :
               <div className="w-screen"><Stepchart steps={stepData?.steps} timestamp={stepData?.timestamps}/></div>

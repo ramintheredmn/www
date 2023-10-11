@@ -12,11 +12,11 @@ import {
   import { Button } from "@/components/ui/button"
 import { DatePickerWithRange } from "./Datepicker"
   type Datesend = {
-    date: any,
-    setDate: any
-    calendershow:  boolean
+    date?: any,
+    setDate?: any
+
   }
-  export function AlertDialogDemo({date, setDate, calendershow}:Datesend) {
+  export function AlertDialogDemo({date, setDate}:Datesend) {
 
     return (
       <AlertDialog>
