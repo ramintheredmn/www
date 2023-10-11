@@ -75,7 +75,7 @@ export default function Home() {
 
 
   
-  const {data: sleepData, error: sleepError, isLoading: isSleepL} = useSWR(userid?`/api/sleep/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null, fetcher, { refreshInterval: 60*5*1000 });
+  //const {data: sleepData, error: sleepError, isLoading: isSleepL} = useSWR(userid?`/api/sleep/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null, fetcher, { refreshInterval: 60*5*1000 });
 
 
   return (
@@ -139,7 +139,7 @@ export default function Home() {
 
           </section>
           <div className="flex flex-col items-center justify-center">
-            {userid? 
+            {/* {userid? 
               isSleepL? <div>Loading...</div>
               :
               <div className="w-screen">
@@ -147,7 +147,7 @@ export default function Home() {
                 <ECGPlot data={sleepData} /></div>
               :
               <div>select user id</div>
-              }
+              } */}
             {userid?
 
               stepcheck?
