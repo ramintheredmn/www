@@ -78,7 +78,7 @@ def extract_selected_userid_data_withDates (userid, startDate, endDate):
     if endDate - startDate <86400:
         startDate = startDate - x  
     query_2 = text('''
-        SELECT DISTINCT TIMESTAMP, HEART_RATE, STEPS 
+        SELECT DISTINCT TIMESTAMP, HEART_RATE
         FROM MI_BAND_ACTIVITY_SAMPLE 
         WHERE USER_ID = :user_id
         AND TIMESTAMP BETWEEN :start_date AND :end_date;
@@ -92,6 +92,24 @@ def extract_selected_userid_data_withDates (userid, startDate, endDate):
 
     return dict_data
     
+
+def koldata(userid):
+   
+ 
+    query = text('''
+        SELECT DISTINCT TIMESTAMP, HEART_RATE, STEPS 
+        FROM MI_BAND_ACTIVITY_SAMPLE 
+        WHERE USER_ID = :user_id
+        AND TIMESTAMP BETWEEN :start_date AND :end_date;
+    ''')
+    with engine.connect() as conn:
+
+        resultall = conn.execute(query, {'user_id':userid})
+        res = resultall.fetchall()
+        
+        dict_data = [row._asdict() for row in res]
+
+    return dict_data
 
 def extract_selected_userid_steps_withDates (userid, startDate, endDate):
    

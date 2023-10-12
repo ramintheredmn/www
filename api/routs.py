@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, url_for, redirect, send_from_directory, jsonify, abort # importing this session object to access a variable between routs
 from api.database import engine
 from flask import session as data_session
-from api.dataanalyze import MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, get_latest_timestamp,extract_selected_userid_data_withDates, extract_selected_userid_steps_withDates
+from api.dataanalyze import koldata, MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, get_latest_timestamp,extract_selected_userid_data_withDates, extract_selected_userid_steps_withDates
 from sqlalchemy import text
 from datetime import datetime
 from api import app, apiK
@@ -140,33 +140,33 @@ def getMa(windowsize, userid):
 
 
 
-#route for sleep stage detecting
-@app.route("/api/sleep/<int:userid>")
-def slllllllleeeeeep(userid):
+# #route for sleep stage detecting
+# @app.route("/api/sleep/<int:userid>")
+# def slllllllleeeeeep(userid):
 
-    try:
-        dt_start = int(request.args.get('startdate')) - 2.5*60*60
-        dt_end = int(request.args.get('enddate')) -2.5*60*60
-        data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
-        timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
-        heart_rates = [data['HEART_RATE'] for data in data_dicts]
-        combined_data = [{'TimeStamp': str(timestamp), 'HeartRate': str(heart_rate)} for timestamp, heart_rate in zip(timestamps, heart_rates)]
-        combined_stages_pred = sleepanalyse(combined_data)
-        n_tss = len(combined_stages_pred.tolist())
-        mytss = []
-        first_timestamp = timestamps[0]
-        for i in range(n_tss):
-            mytss.append(first_timestamp)
-            first_timestamp+=30
-            i= i+1
+#     try:
+#         dt_start = int(request.args.get('startdate')) - 2.5*60*60
+#         dt_end = int(request.args.get('enddate')) -2.5*60*60
+#         data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
+#         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
+#         heart_rates = [data['HEART_RATE'] for data in data_dicts]
+#         combined_data = [{'TimeStamp': str(timestamp), 'HeartRate': str(heart_rate)} for timestamp, heart_rate in zip(timestamps, heart_rates)]
+#         combined_stages_pred = sleepanalyse(combined_data)
+#         n_tss = len(combined_stages_pred.tolist())
+#         mytss = []
+#         first_timestamp = timestamps[0]
+#         for i in range(n_tss):
+#             mytss.append(first_timestamp)
+#             first_timestamp+=30
+#             i= i+1
 
 
-    except Exception as e:
-        return jsonify({"error" : str(e)}), 500
+#     except Exception as e:
+#         return jsonify({"error" : str(e)}), 500
 
     
-    #return jsonify({"data": combined_data})
-    return jsonify({"combined": combined_stages_pred.tolist(), "donkey": mytss})
+#     #return jsonify({"data": combined_data})
+#     return jsonify({"combined": combined_stages_pred.tolist(), "donkey": mytss})
 
 @app.route('/api/steps/<int:userid>')
 def steps(userid):
@@ -180,3 +180,15 @@ def steps(userid):
         return jsonify({'error': str(e)}), 500
 
     return jsonify({"steps": steps, "timestamps": timestamps})
+
+@app.route('/api/koldata/<int:userid>')
+def koldata(userid):
+    try:
+        data = koldata(userid)
+        times = [data['TIMESTAMP'] for data in data]
+        ss = [data['STEPS'] for data in data]
+        hr = [data['HEART_RATE'] for data in data]
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+    return jsonify({"times": times, "steps": ss, "heartrate": hr})
