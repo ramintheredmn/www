@@ -121,7 +121,11 @@ def extract_selected_userid_steps_withDates (userid, startDate, endDate):
         SELECT DISTINCT TIMESTAMP, STEPS 
         FROM MI_BAND_ACTIVITY_SAMPLE 
         WHERE USER_ID = :user_id
-        AND TIMESTAMP BETWEEN :start_date AND :end_date;
+        AND TIMESTAMP >= (
+                  select max(TIMESTAMP) - 86400
+                  from MI_BAND_ACTIVITY_SAMPLE
+                  where USER_ID = :user_id
+         );                
     ''')
     with engine.connect() as conn:
 
