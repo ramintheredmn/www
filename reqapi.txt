@@ -96,3 +96,4 @@ Werkzeug==2.3.6
 widgetsnbextension==4.0.8
 zipp==3.16.2
 sshtunnel
+flask_cors
