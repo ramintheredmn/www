@@ -7,7 +7,11 @@ from sqlalchemy import text
 from datetime import datetime
 from api import app, apiK
 from sqlalchemy.orm import sessionmaker
-from api.slllllllleeeeeep import sleepanalyse
+import pandas as pd
+import math
+from api.sleepalgo import khiar, sleepstaging, binarysleep_with_denoise
+
+# from api.slllllllleeeeeep import sleepanalyse
 
 @app.route('/')
 def index():
@@ -140,40 +144,34 @@ def getMa(windowsize, userid):
 
 
 
-# #route for sleep stage detecting
-# @app.route("/api/sleep/<int:userid>")
-# def slllllllleeeeeep(userid):
+@app.route('/api/sleep/<int:userid>')
+def sleep(userid):
+    try:
 
-#     try:
-#         dt_start = int(request.args.get('startdate')) - 2.5*60*60
-#         dt_end = int(request.args.get('enddate')) -2.5*60*60
-#         data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
-#         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
-#         heart_rates = [data['HEART_RATE'] for data in data_dicts]
-#         combined_data = [{'TimeStamp': str(timestamp), 'HeartRate': str(heart_rate)} for timestamp, heart_rate in zip(timestamps, heart_rates)]
-#         combined_stages_pred = sleepanalyse(combined_data)
-#         n_tss = len(combined_stages_pred.tolist())
-#         mytss = []
-#         first_timestamp = timestamps[0]
-#         for i in range(n_tss):
-#             mytss.append(first_timestamp)
-#             first_timestamp+=30
-#             i= i+1
+        dt_start = int(request.args.get('startdate')) - 2.5*60*60
+        dt_end = int(request.args.get('enddate')) -2.5*60*60
+        data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
+        timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
+        steps = [int(data['STEPS']) for data in data_dicts]
+        heart_rates = [int(data['HEART_RATE']) for data in data_dicts]
 
+        df = pd.DataFrame({"TimeStamp": timestamps, "HeartRate": heart_rates, "Movement": steps})
+        khiar(df)
+        a = sleepstaging(df)
+        new_list = [3 if math.isnan(x) else x for x in a]
 
-#     except Exception as e:
-#         return jsonify({"error" : str(e)}), 500
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return ({"timestamps": timestamps, "sleepP": new_list})   
 
-    
-#     #return jsonify({"data": combined_data})
-#     return jsonify({"combined": combined_stages_pred.tolist(), "donkey": mytss})
 
 @app.route('/api/steps/<int:userid>')
 def steps(userid):
     try:
         dt_start = int(request.args.get('startdate')) - 2.5*60*60
         dt_end = int(request.args.get('enddate')) -2.5*60*60
-        data_dicts = extract_selected_userid_steps_withDates(userid, dt_start, dt_end)
+        data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         steps = [data['STEPS'] for data in data_dicts]
     except Exception as e:

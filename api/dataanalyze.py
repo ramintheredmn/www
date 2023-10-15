@@ -5,6 +5,10 @@ import numpy as np
 import pandas as pd
 from sqlalchemy import func  
 
+
+
+
+
 def get_latest_timestamp(user_id):
     query = text('''
         SELECT MAX(TIMESTAMP) AS maxTimestamp, MIN(TIMESTAMP) AS minTimestamp
@@ -78,7 +82,7 @@ def extract_selected_userid_data_withDates (userid, startDate, endDate):
     if endDate - startDate <86400:
         startDate = startDate - x  
     query_2 = text('''
-        SELECT DISTINCT TIMESTAMP, HEART_RATE
+        SELECT DISTINCT TIMESTAMP, HEART_RATE, STEPS
         FROM MI_BAND_ACTIVITY_SAMPLE 
         WHERE USER_ID = :user_id
         AND TIMESTAMP BETWEEN :start_date AND :end_date;

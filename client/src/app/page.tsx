@@ -50,7 +50,7 @@ export default function Home() {
   const [hrshow, setHrshow] = useState(true)
   const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(userid? `/api/steps/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
   const [stepcheck, setstepCheck] = useState(false)
-  
+  const {data: sleepData, error: sleepError, isLoading: isSleepLoading} = Fetch(userid? `/api/sleep/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
 
   const [sublogininfo, setSublogininfo] = useState({
     useridLogin: '',
@@ -59,7 +59,7 @@ export default function Home() {
     demograph:{}
   })
 
-
+  const [hourstep, setHourstep] = useState(false)
 
   //console.log(userMa)
   let content;
@@ -75,7 +75,6 @@ export default function Home() {
 
 
   
-  //const {data: sleepData, error: sleepError, isLoading: isSleepL} = useSWR(userid?`/api/sleep/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null, fetcher, { refreshInterval: 60*5*1000 });
 
 
   return (
@@ -132,30 +131,35 @@ export default function Home() {
           
           <section className="flex flex-row items-center justify-between gap-2">
           {/* <ComboboxDemo userid={sleepUserid} setUserid={setSleepuserid} /> */}
-          <Checkbox checked={stepcheck} onCheckedChange={()=>setstepCheck(stepcheck?false:true)}/>
-          <p>show steps data</p>
+          <div className="flex flex-col">
+
+          </div>
+
+          
+
           <AlertDialogDemo date={date} setDate={setDate}/>
+          
 
-
+          
+          
           </section>
           <div className="flex flex-col items-center justify-center">
-            {/* {userid? 
-              isSleepL? <div>Loading...</div>
+            {userid? 
+              isSleepLoading? <div>Loading...</div>
               :
               <div className="w-screen">
                 
                 <ECGPlot data={sleepData} /></div>
               :
               <div>select user id</div>
-              } */}
+              }
             {userid?
 
-              stepcheck?
+              
               stepLoading? <div>Loading...</div>
               :
               <div className="w-screen"><Stepchart steps={stepData?.steps} timestamp={stepData?.timestamps}/></div>
-              :
-              <div> </div>
+
               :
               null
               }
