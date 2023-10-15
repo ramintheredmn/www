@@ -158,7 +158,7 @@ def sleep(userid):
         df = pd.DataFrame({"TimeStamp": timestamps, "HeartRate": heart_rates, "Movement": steps})
         khiar(df)
         a = sleepstaging(df)
-        new_list = [3 if math.isnan(x) else x for x in a]
+        new_list = [0 if math.isnan(x) else x for x in a]
 
         
     except Exception as e:
