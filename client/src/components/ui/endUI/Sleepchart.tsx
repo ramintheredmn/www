@@ -8,7 +8,7 @@ import ReactECharts from 'echarts-for-react';
 
 const ECGPlot = ({ data }: any) => {
 
-    if (!data || !data.combined || !data.donkey) {
+    if (!data || !data.timestamps || !data.sleepP) {
         return <div>Loading...</div>;
       }
     // Parse the combined data
@@ -16,9 +16,8 @@ const ECGPlot = ({ data }: any) => {
 
     // Extract timestamps, wake, rem, and nrem data
     // using the seprate timestamp list for x axis
-    const timestamps:Number[] = data?.donkey;
-    const wakeData:Number[]  = combined?.map((entry: Number[]) => entry[2]);
-    const sleepData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
+    const timestamps:Number[] = data?.timestamps;
+    const sleepP:Number[] = data?.sleepP;
     // const nremData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
 
     // console.log(data)
@@ -33,7 +32,7 @@ const ECGPlot = ({ data }: any) => {
             },
         },
         legend: {
-            data: ['Wake', 'Sleep'],
+            data: ['Sleep'],
         },
         xAxis: {
             type: 'time',
@@ -57,7 +56,7 @@ const ECGPlot = ({ data }: any) => {
         ],
         series: [
             {
-                name: 'Wake',
+                name: 'Sleep',
                 type: 'line',
                 stack: 'percentage',
                 
@@ -70,38 +69,10 @@ const ECGPlot = ({ data }: any) => {
                     focus: 'series'
                   },
 
-                data: timestamps?.map((v,r)=>[Number(v)*1000, wakeData[r]])
+                data: timestamps?.map((v,r)=>[Number(v)*1000, sleepP[r]])
             },
-            {
-                name: 'Sleep',
-                type: 'line',
-                stack: 'percentage',
-                areaStyle: {
-                    opacity: 1,
 
-                  },
-                  emphasis: {
-                    focus: 'series'
-                  },
-                symbol: 'none',
 
-                data: timestamps?.map((v,r)=>[Number(v)*1000, sleepData[r]])
-            },
-            // {
-            //     name: 'NREM',
-            //     type: 'line',
-            //     stack: 'percentage',
-            //     areaStyle: {
-            //         opacity: 1,
-
-            //       },
-            //       emphasis: {
-            //         focus: 'series'
-            //       },
-            //     symbol: 'none',
-
-            //     data: timestamps?.map((v,r)=>[Number(v)*1000, nremData[r]])
-            // },
         ],
     };
 
