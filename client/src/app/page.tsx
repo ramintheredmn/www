@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialogDemo } from "@/components/ui/endUI/Calender";
 import { Tabbedcard } from "@/components/ui/endUI/Logincard";
 import { Chartconfig } from "@/components/ui/endUI/Configchart";
+import { ActivityChartconfig } from "@/components/ui/endUI/Configchartactivity";
 
 const fetcher = async (url:string) => {
   const response = await fetch(url);
@@ -135,9 +136,13 @@ export default function Home() {
 
           </div>
 
-          
+          <div className="flex flex-row">
 
+          <ActivityChartconfig/>
           <AlertDialogDemo date={date} setDate={setDate}/>
+
+          </div>
+
           
 
           
@@ -149,26 +154,17 @@ export default function Home() {
               :
               <div className="w-screen">
                 
-                <ECGPlot data={sleepData} /></div>
+                <ECGPlot data={sleepData} steps={stepData} /></div>
               :
               <div>select user id</div>
               }
-            {userid?
 
-              
-              stepLoading? <div>Loading...</div>
-              :
-              <div className="w-screen"><Stepchart steps={stepData?.steps} timestamp={stepData?.timestamps}/></div>
-
-              :
-              null
-              }
 
           </div>
 
         </section>
 
-        </TabsContent>
+        </TabsContent>  
         
       </Tabs>
 
