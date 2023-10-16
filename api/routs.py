@@ -173,20 +173,22 @@ def steps(userid):
         dt_end = int(request.args.get('enddate')) -2.5*60*60
         data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
-        steps = [data['STEPS'] for data in data_dicts]
+        steps = [int(data['STEPS']) for data in data_dicts]
+        raw_step_agg = []
+        step_agg = [0 if x<150 else x for x in raw_step_agg]
+        step_agg_timestamps = []
+
+        i = 0
+        while i < len(steps):
+            agg_sum = sum(steps[i:i+60])
+            
+            step_agg.append(agg_sum)
+            step_agg_timestamps.append(timestamps[i])
+            
+            i += 60
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-    return jsonify({"steps": steps, "timestamps": timestamps})
+    return jsonify({"steps": steps, "timestamps": timestamps, "hourstep": step_agg, "hourtamp": step_agg_timestamps})
 
-@app.route('/api/koldata/<int:userid>')
-def koldata(userid):
-    try:
-        data = koldata(userid)
-        times = [data['TIMESTAMP'] for data in data]
-        ss = [data['STEPS'] for data in data]
-        hr = [data['HEART_RATE'] for data in data]
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
-    return jsonify({"times": times, "steps": ss, "heartrate": hr})
+

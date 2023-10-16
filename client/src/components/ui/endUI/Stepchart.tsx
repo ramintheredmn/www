@@ -49,7 +49,7 @@ export default function Stepchart(props: {
     series: [
       {
         name: 'steps',
-		symbol: 'none',
+		    symbol: 'none',
     
 
         type: 'bar',

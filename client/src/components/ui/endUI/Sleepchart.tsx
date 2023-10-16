@@ -20,6 +20,8 @@ const ECGPlot = ({ data, steps }: any) => {
     const timestamps:Number[] = data?.timestamps;
     const sleepP:Number[] = data?.sleepP;
     const step:Number[] = steps?.steps;
+    const hourstep: Number[] = steps?.hourstep;
+    const hourtamp: Number[] = steps?.hourtamp;
     // const nremData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
 
     // console.log(data)
@@ -34,17 +36,27 @@ const ECGPlot = ({ data, steps }: any) => {
             },
         },
         legend: {
-            data: ['Sleep', 'steps'],
+            data: ['steps', 'Sleep', 'hoursteps'],
         },
         xAxis: {
             type: 'time',
             
         },
-        yAxis: {
+        yAxis: [
+
+
+          {
+            name: 'Sleep',
+            type: 'value'
+          },
+          {
+            name: 'hoursteps',
+            nameLocation: 'start',
+            alignTicks: true,
             type: 'value',
-            min: 0,
-            max: 1,
-        },
+            inverse: true
+          }
+        ],
         dataZoom: [
           {
             type: 'inside',
@@ -57,11 +69,23 @@ const ECGPlot = ({ data, steps }: any) => {
           }
         ],
         series: [
+          {
+            name: 'steps',
+            symbol: 'none',
+            order:1,
+    
+            type: 'bar',
+            barStyle: {
+              width: 10
+            },
+            data: timestamps?.map((v,r)=>[Number(v)*1000, step[r]])
+          },
             {
                 name: 'Sleep',
                 type: 'line',
                 smooth: true,           
                 symbol: 'none',
+
                 areaStyle: {
                     opacity: 0.5,
 
@@ -70,15 +94,21 @@ const ECGPlot = ({ data, steps }: any) => {
                     focus: 'series'
                   },
 
-                data: timestamps?.map((v,r)=>[Number(v)*1000, sleepP[r]])
+                data: timestamps?.map((v,r)=>[Number(v)*1000, Number(sleepP[r])*100])
             },
+
             {
-              name: 'steps',
+              name: 'hoursteps',
               symbol: 'none',
           
-      
+              yAxisIndex: 1,
+
               type: 'line',
-              data: timestamps?.map((v,r)=>[Number(v)*1000, step[r]])
+              smooth: true,
+              areaStyle: {
+                opacity: 0.5
+              },
+              data: hourtamp?.map((v,r)=>[Number(v)*1000, Number(hourstep[r])])
             },
 
 
