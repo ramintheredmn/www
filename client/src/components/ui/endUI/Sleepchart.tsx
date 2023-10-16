@@ -6,7 +6,8 @@ import ReactECharts from 'echarts-for-react';
 //     "timestamp"
 // }
 
-const ECGPlot = ({ data }: any) => {
+const ECGPlot = ({ data, steps }: any) => {
+  console.log(steps)
 
     if (!data || !data.timestamps || !data.sleepP) {
         return <div>Loading...</div>;
@@ -18,6 +19,7 @@ const ECGPlot = ({ data }: any) => {
     // using the seprate timestamp list for x axis
     const timestamps:Number[] = data?.timestamps;
     const sleepP:Number[] = data?.sleepP;
+    const step:Number[] = steps?.steps;
     // const nremData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
 
     // console.log(data)
@@ -32,7 +34,7 @@ const ECGPlot = ({ data }: any) => {
             },
         },
         legend: {
-            data: ['Sleep'],
+            data: ['Sleep', 'steps'],
         },
         xAxis: {
             type: 'time',
@@ -58,11 +60,10 @@ const ECGPlot = ({ data }: any) => {
             {
                 name: 'Sleep',
                 type: 'line',
-                stack: 'percentage',
-                
+                smooth: true,           
                 symbol: 'none',
                 areaStyle: {
-                    opacity: 1,
+                    opacity: 0.5,
 
                   },
                   emphasis: {
@@ -71,12 +72,20 @@ const ECGPlot = ({ data }: any) => {
 
                 data: timestamps?.map((v,r)=>[Number(v)*1000, sleepP[r]])
             },
+            {
+              name: 'steps',
+              symbol: 'none',
+          
+      
+              type: 'line',
+              data: timestamps?.map((v,r)=>[Number(v)*1000, step[r]])
+            },
 
 
         ],
     };
 
-    return <ReactECharts option={option} style={{ height: 0.5*innerHeight, width: '100%'  }} />;
+    return <ReactECharts option={option} style={{ height: innerHeight-250, width: '100%'  }} />;
 };
 
 export default ECGPlot;
