@@ -8,7 +8,10 @@ export default function Chart(props: {
   show: boolean
 
   }) {
+
+const [chartshow, setChartshow] = useState(true)
   
+!props.timestamp&& setChartshow(false)
 
   const option = {
 
@@ -73,10 +76,12 @@ export default function Chart(props: {
 //console.log(props.ma)
 
 	return (
-		<ReactECharts
-			option={option}
-			style={{ height: innerHeight-250, width: '100%' }}
-			lazyUpdate={true}
-		/>
+    <div>
+    {chartshow ?
+  <ReactECharts option={option} style={{ height: innerHeight-250, width: '100%'  }} />
+  :
+      'No data in selected time interval for this user id'
+  }
+  </div> 
 	);
 }

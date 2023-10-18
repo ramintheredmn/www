@@ -52,12 +52,10 @@ export default function Home() {
   const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(userid? `/api/steps/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
   const [stepcheck, setstepCheck] = useState(false)
   const {data: sleepData, error: sleepError, isLoading: isSleepLoading} = Fetch(userid? `/api/sleep/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
-
   const [sublogininfo, setSublogininfo] = useState({
     useridLogin: '',
     password: '',
     role: '',
-    demograph:{}
   })
 
   const [hourstep, setHourstep] = useState(false)
@@ -102,6 +100,7 @@ export default function Home() {
         <TabsList>
           <TabsTrigger value="heartrate">Heart Rate Analyze</TabsTrigger>
           <TabsTrigger value="slac">Activity and Sleep</TabsTrigger>
+          <TabsTrigger value="info">{userid?`${userid} info`: 'choose user id'}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="heartrate">
@@ -121,9 +120,29 @@ export default function Home() {
               
             </section>
 
+            {
+              userid?
 
+              <section className="flex flex-col items-center justify-center">
+                
+                <div>{content}</div>
+                <p>
+                  
+                  {
+                  
+    
+               (userData?.timestamps[0] || userData?.timestamps[userData.timestamps.length - 1]) == null?
+               `No data in selected timeinterval for this usesr id`
+                :
+                
+                `showing the result from ${new Date(Number(userData?.timestamps[0]) * 1000)} to ${new Date(Number(userData?.timestamps[userData.timestamps.length - 1])*1000)}`} </p>
+                
+              </section>
 
-            <div className="flex items-center justify-center">{content}</div>
+              :
+              'select user id'
+
+            }
             
         </TabsContent>
         <TabsContent value="slac">
@@ -164,7 +183,19 @@ export default function Home() {
 
         </section>
 
-        </TabsContent>  
+        </TabsContent>
+        <TabsContent value='info'>
+
+            <section className="mt-2 space-y-2">
+              
+                  <p className="font-semibold">Your mean heartrate : </p>
+                  <p className="font-semibold">Your monthly mean heartrate : </p>
+                  <p className="font-semibold">Your weekly mean heartrate : </p>
+                  <p className="font-semibold"> daily mean HeartRate : </p>
+                  <p className="font-semibold"> night mean heartrate : </p>
+            </section>
+
+        </TabsContent>
         
       </Tabs>
 

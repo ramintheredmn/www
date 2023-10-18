@@ -10,7 +10,7 @@ const ECGPlot = ({ data, steps }: any) => {
   console.log(steps)
 
     if (!data || !data.timestamps || !data.sleepP) {
-        return <div>Loading...</div>;
+        return <div className='mt-3 flex justify-center '>NO data in selected time interval for this user id</div>;
       }
     // Parse the combined data
     const combined = data?.combined;
@@ -115,7 +115,17 @@ const ECGPlot = ({ data, steps }: any) => {
         ],
     };
 
-    return <ReactECharts option={option} style={{ height: innerHeight-250, width: '100%'  }} />;
+    return (
+      <div>
+        {(!timestamps) ?
+      'no data in seleceted time interval'
+      :
+      <ReactECharts option={option} style={{ height: innerHeight-250, width: '100%'  }} />
+
+      }
+      </div> 
+      
+    )
 };
 
 export default ECGPlot;
