@@ -52,6 +52,9 @@ export default function Home() {
   const {data: stepData, error: stepError, isLoading: stepLoading} = Fetch(userid? `/api/steps/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
   const [stepcheck, setstepCheck] = useState(false)
   const {data: sleepData, error: sleepError, isLoading: isSleepLoading} = Fetch(userid? `/api/sleep/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
+  
+  const {data: infodata, error: infoError, isLoading: isinfoLoading} = Fetch(userid? `/api/info/${userid}?startdate=${Math.floor(date?.from?.getTime() / 1000)}&enddate=${Math.floor(date?.to?.getTime() / 1000)}`: null)
+
   const [sublogininfo, setSublogininfo] = useState({
     useridLogin: '',
     password: '',
@@ -185,16 +188,18 @@ export default function Home() {
 
         </TabsContent>
         <TabsContent value='info'>
-
+            {infodata ?(
             <section className="mt-2 space-y-2">
-              
-                  <p className="font-semibold">Your mean heartrate : </p>
-                  <p className="font-semibold">Your monthly mean heartrate : </p>
-                  <p className="font-semibold">Your weekly mean heartrate : </p>
-                  <p className="font-semibold"> daily mean HeartRate : </p>
-                  <p className="font-semibold"> night mean heartrate : </p>
-            </section>
 
+                  <p className="font-semibold">{`${userid} Total Mean Heart Rate(last day) :${infodata.total_mean_heart_rate_last_day}`}</p>
+                  <p className="font-semibold">{`${userid} Total Mean Heart Rate(last month) :${infodata.total_mean_heart_rate_last_month}`} </p>
+                  <p className="font-semibold">{`${userid} Total Mean Heart Rate(last week) :${infodata.total_mean_heart_rate_last_week}` }</p>
+                  <p className="font-semibold">{`${userid} Daily Mean Heart Rate(last week) :${infodata.daily_mean_heart_rate_last_week}` }: </p>
+                  <p className="font-semibold">{`${userid} Nightly Mean Heart Rate(last week) :${infodata.nightly_mean_heart_rate_last_week}` }</p>
+            </section>
+            ) : (
+              <p>Loading or no data available</p>
+            )}
         </TabsContent>
         
       </Tabs>

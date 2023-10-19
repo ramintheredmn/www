@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 import pandas as pd
 import math
 from api.sleepalgo import khiar, sleepstaging, binarysleep_with_denoise
+from api.info import infocal
 
 # from api.slllllllleeeeeep import sleepanalyse
 
@@ -164,8 +165,25 @@ def sleep(userid):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     return ({"timestamps": timestamps, "sleepP": new_list})   
+###Reza Test
+@app.route('/api/info/<int:userid>')
+def info(userid):
+    try:
+        dt_end = int(datetime.now().timestamp())    
+        #subtracking 2592000 to get last 30 days timestamp (30*24*60*60)
+        dt_start = dt_end - 2592000
+        data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
+        timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
+        steps = [int(data['STEPS']) for data in data_dicts]
+        heart_rates = [int(data['HEART_RATE']) for data in data_dicts]
 
-
+        df = pd.DataFrame({"TimeStamp": timestamps, "HeartRate": heart_rates, "Movement": steps})
+        total_mean_heart_rate_last_day , total_mean_heart_rate_last_month , total_mean_heart_rate_last_week , nightly_mean_heart_rate_last_week ,daily_mean_heart_rate_last_week = infocal(df)
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    return ({"total_mean_heart_rate_last_day": total_mean_heart_rate_last_day, "total_mean_heart_rate_last_month": total_mean_heart_rate_last_month , "total_mean_heart_rate_last_week": total_mean_heart_rate_last_week , "nightly_mean_heart_rate_last_week" : nightly_mean_heart_rate_last_week ,"daily_mean_heart_rate_last_week":daily_mean_heart_rate_last_week} )
+###Reza Test End
 @app.route('/api/steps/<int:userid>')
 def steps(userid):
     try:
