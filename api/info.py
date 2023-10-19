@@ -6,19 +6,19 @@ def infocal (df):
     last_day_data = df[df['TimeStamp'] >= (df['TimeStamp'].max() - 24 * 3600)]
 
     # Calculate the mean heart rate for the last day
-    total_mean_heart_rate_last_day = last_day_data['HeartRate'].mean()
+    total_mean_heart_rate_last_day = int(last_day_data['HeartRate'].mean())
     
     # Filter for the last month
     last_month_data = df[df['TimeStamp'] >= (df['TimeStamp'].max() - 30 * 24 * 3600)]
 
     # Calculate the mean heart rate for the last month
-    total_mean_heart_rate_last_month = last_month_data['HeartRate'].mean()
+    total_mean_heart_rate_last_month = int(last_month_data['HeartRate'].mean())
 
     # Filter for the last week
     last_week_data = df[df['TimeStamp'] >= (df['TimeStamp'].max() - 7 * 24 * 3600)]
 
     # Calculate the mean heart rate for the last week
-    total_mean_heart_rate_last_week = last_week_data['HeartRate'].mean()
+    total_mean_heart_rate_last_week = int(last_week_data['HeartRate'].mean())
 
     # Convert the TimeStamp column to datetime
     last_week_data['TimeStamp'] = pd.to_datetime(last_week_data['TimeStamp'], unit='s')
@@ -30,9 +30,9 @@ def infocal (df):
     daytime_data = last_week_data[(last_week_data['TimeStamp'].dt.hour >= 9) & (last_week_data['TimeStamp'].dt.hour < 21)]
 
     # Calculate the mean heart rate for nighttime hours
-    nightly_mean_heart_rate_last_week = nighttime_data['HeartRate'].mean()
+    nightly_mean_heart_rate_last_week = int(nighttime_data['HeartRate'].mean())
 
     # Calculate the mean heart rate for daytime hours
-    daily_mean_heart_rate_last_week = daytime_data['HeartRate'].mean()
+    daily_mean_heart_rate_last_week = int(daytime_data['HeartRate'].mean())
 
     return total_mean_heart_rate_last_day , total_mean_heart_rate_last_month , total_mean_heart_rate_last_week , nightly_mean_heart_rate_last_week ,daily_mean_heart_rate_last_week
