@@ -159,12 +159,13 @@ def sleep(userid):
         df = pd.DataFrame({"TimeStamp": timestamps, "HeartRate": heart_rates, "Movement": steps})
         khiar(df)
         a = sleepstaging(df)
-        new_list = [0 if math.isnan(x) else x for x in a]
-
+        b = binarysleep_with_denoise(df)
+        prob_sleep = [0 if math.isnan(x) else x for x in a]
+        binary_sleep = [3 if math.isnan(x) else x for x in a]
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    return ({"timestamps": timestamps, "sleepP": new_list})   
+    return ({"timestamps": timestamps, "sleepP": prob_sleep , "sleepB" :binary_sleep })   
 ###Reza Test
 @app.route('/api/info/<int:userid>')
 def info(userid):
