@@ -8,6 +8,9 @@ import { ComboboxDemo } from "@/components/ui/endUI/UseridCombobox";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useEffect, useState } from "react";
 import ECGPlot from "@/components/ui/endUI/Sleepchart";
+
+import BinaryECGPlot from "@/components/ui/endUI/BinarySleepchart";
+
 import Stepchart from "@/components/ui/endUI/Stepchart";
 import { Button } from "@/components/ui/button";
 import { AlertDialogDemo } from "@/components/ui/endUI/Calender";
@@ -176,7 +179,9 @@ export default function Home() {
               :
               <div className="w-screen">
                 
-                <ECGPlot data={sleepData} steps={stepData} /></div>
+                <ECGPlot data={sleepData} steps={stepData} />
+                <BinaryECGPlot data={sleepData} />
+                </div>
               :
               <div>select user id</div>
               }

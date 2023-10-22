@@ -22,6 +22,7 @@ const ECGPlot = ({ data, steps }: any) => {
     const step:Number[] = steps?.steps;
     const hourstep: Number[] = steps?.hourstep;
     const hourtamp: Number[] = steps?.hourtamp;
+
     // const nremData:Number[]  = combined?.map((entry: Number[]) => entry[1]);
 
     // console.log(data)
