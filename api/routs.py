@@ -157,11 +157,13 @@ def sleep(userid):
         heart_rates = [int(data['HEART_RATE']) for data in data_dicts]
 
         df = pd.DataFrame({"TimeStamp": timestamps, "HeartRate": heart_rates, "Movement": steps})
+        _ , _ , _ , nightly_mean_heart_rate_last_week ,_ = infocal(df)
+
         khiar(df)
-        a = sleepstaging(df)
+        a = sleepstaging(df , resting_hr_weight = nightly_mean_heart_rate_last_week)
         b = binarysleep_with_denoise(df)
         prob_sleep = [0 if math.isnan(x) else x for x in a]
-        binary_sleep = [3 if math.isnan(x) else x for x in a]
+        binary_sleep = [3 if math.isnan(x) else x for x in b]
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
