@@ -14,12 +14,6 @@ const BinaryECGPlot = ({ data }: any) => {
   const binarySleep: Number[] = data?.sleepB;
 
   const option = {
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'cross',
-      },
-    },
     legend: {
       data: ['Binary Sleep'],
     },
@@ -50,9 +44,6 @@ const BinaryECGPlot = ({ data }: any) => {
         type: 'line',
         smooth: true,
         symbol: 'none',
-        areaStyle: {
-          opacity: 0.5,
-        },
         emphasis: {
           focus: 'series',
         },
