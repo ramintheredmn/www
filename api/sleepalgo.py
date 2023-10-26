@@ -59,14 +59,9 @@ def sleepstaging (df , hr_weight = 3 , movement_weight = 5 , sd_weight = 0.5 , r
     return list(df['SleepProbability'])
 
 
-import pandas as pd
-
-def binarysleep_with_denoise(df, threshold=0.15):
-    # Create a new column 'BinarySleep' and initialize it with 0
+def binarysleep_with_denoise(df, threshold=0.15, window_size=10):
     df['BinarySleep'] = 0
-
-    # Set 'BinarySleep' to 1 if 'SleepProbability' is greater than or equal to the threshold
     df.loc[df['SleepProbability'] >= threshold, 'BinarySleep'] = 1
-
-    # Return the 'BinarySleep' column
+    df['BinarySleep'] = df['BinarySleep'].rolling(window=window_size, center=True, min_periods=1).mean()
+    df['BinarySleep'] = (df['BinarySleep'] >= 0.5).astype(int)
     return df['BinarySleep']
