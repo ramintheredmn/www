@@ -75,7 +75,7 @@ export default function Home() {
   } else if (error || (maon && errorma)) {
     content = <div>error in fetching data <br/> check your internet connection if not resolved contact admin</div>;
   } else {
-    content = userData?<div className="w-screen"><Chart heartrate={userData?.heartrate} timestamp={userData?.timestamps} ma={userMa?.ma} show={hrshow} /></div>: <div>No data in selected time interval</div>;
+    content = userData?<div className="w-screen"><Chart heartrate={userData?.heartrate} timestamp={userData?.timestamps} ma={userMa?.ma} show={hrshow} loading={isLoading} /></div>: <div>No data in selected time interval</div>;
   }
 
 
@@ -104,9 +104,9 @@ export default function Home() {
         
       <Tabs defaultValue="heartrate" className="flex flex-col items-center justify-center w-3/4 rounded">
         <TabsList>
-          <TabsTrigger value="heartrate">Heart Rate Analyze</TabsTrigger>
-          <TabsTrigger value="slac">Activity and Sleep</TabsTrigger>
-          <TabsTrigger value="info">{userid?`${userid} info`: 'choose user id'}</TabsTrigger>
+          <TabsTrigger value="heartrate">آنالیز ضربان قلب</TabsTrigger>
+          <TabsTrigger value="slac">خواب و فعالیت</TabsTrigger>
+          <TabsTrigger value="info">{userid?`${userid} اطلاعات`: 'ابتدا یک آیدی انتخاب کنید'}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="heartrate">
@@ -125,7 +125,7 @@ export default function Home() {
               </div>
               
             </section>
-
+            <div className="flex flex-col items-center justify-center content-center">
             {
               userid?
 
@@ -137,18 +137,19 @@ export default function Home() {
                   {
                   
     
-               (userData?.timestamps[0] || userData?.timestamps[userData.timestamps.length - 1]) == null?
-               `No data in selected timeinterval for this usesr id`
+               date && (userData?.timestamps[0] || userData?.timestamps[userData.timestamps.length - 1]) == null?
+               `داده ای برای این کاربر در این بازه زمانی وجود ندارد`
                 :
                 
-                `showing the result from ${new Date(Number(userData?.timestamps[0]) * 1000)} to ${new Date(Number(userData?.timestamps[userData.timestamps.length - 1])*1000)}`} </p>
+                `نتایج از بازه ${new Date(Number(userData?.timestamps[0]) * 1000)} تا ${new Date(Number(userData?.timestamps[userData.timestamps.length - 1])*1000)}`} </p>
                 
               </section>
 
               :
-              'select user id'
-
-            }
+              'آیدی انتخاب کنید'
+                  }
+            </div>
+            
             
         </TabsContent>
         <TabsContent value="slac">
@@ -175,7 +176,7 @@ export default function Home() {
           </section>
           <div className="flex flex-col items-center justify-center">
             {userid? 
-              isSleepLoading? <div>Loading...</div>
+              isSleepLoading? <div>در حال بارگیری...</div>
               :
               <div className="w-screen">
                 
@@ -183,7 +184,7 @@ export default function Home() {
                 <BinaryECGPlot data={sleepData} />
                 </div>
               :
-              <div>select user id</div>
+              <div>یوزر آیدی انتخاب کنید</div>
               }
 
 

@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, url_for, redirect, send_from_directory, jsonify, abort # importing this session object to access a variable between routs
 from api.database import engine
 from flask import session as data_session
-from api.dataanalyze import koldata, MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, get_latest_timestamp,extract_selected_userid_data_withDates, extract_selected_userid_steps_withDates
+from api.dataanalyze import koldata, MiBandActivitySample, distinct_userIdExtract_extract_from_table, calculating_moving_average, get_latest_timestamp,extract_selected_userid_data_withDates, extract_selected_userid_steps_withDates, Userinfo
 from sqlalchemy import text
 from datetime import datetime
 from api import app, apiK
@@ -96,9 +96,38 @@ def receive():
         return 'Data received', 200
 
     except Exception as e:
+        
         session_dta.rollback()
         return f'An error occurred while processing the data: {str(e)}', 500
     
+@app.route('/api/userinfo', methods=['GET', 'POST'])
+def userinfo():
+    try:
+        rec_data = request.get_json()
+        if rec_data:
+            print(rec_data)
+            data_ = [rec_data]
+        if not rec_data:
+            return 'No data received', 400
+        for info in data_:
+            user_id = info['id']
+            password = info['password']
+            role = info['role']
+            demograph = info['demograph']
+
+            existing_sample = session_dta.query(Userinfo).filter_by(user_id= user_id).first()
+
+            if existing_sample is None:
+                sample = Userinfo(user_id=user_id, user_info={'role': role, 'password': password, 'demograph': demograph})
+                session_dta.add(sample)
+        session_dta.commit()
+    except Exception as e:
+        print(str(e))
+        return f'An error occurred while processing the data: {str(e)}', 500
+
+    return {'message' : "data received successfully"}, 200
+
+
 
 @app.route('/api/heartrate/<int:userid>')
 def get_heartrate(userid):

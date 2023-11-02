@@ -21,21 +21,21 @@ import { DatePickerWithRange } from "./Datepicker"
     return (
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="outline" >Calender</Button>
+          <Button variant="outline" >تقویم</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Choose the startdate and enddate </AlertDialogTitle>
+            <AlertDialogTitle>تاریخ شروع وپایان را انتخاب کنید </AlertDialogTitle>
             <AlertDialogDescription>
-              Attention choosing longer time intervals may take some time to load !
+              دقت داشته باشید که انتخاب دوره زمانی طولانی تر زمان پردازش طولانی تر خواهد بود
               <DatePickerWithRange date={date} setDate={setDate}/>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>لغو</AlertDialogCancel>
             <AlertDialogAction
             onClick={() => {}}
-            >Continue</AlertDialogAction>
+            >ادامه</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

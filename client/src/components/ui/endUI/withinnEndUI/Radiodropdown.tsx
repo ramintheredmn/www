@@ -19,8 +19,9 @@ import {useState} from 'react'
 
 type Dropdown = {
     roles: string[]
-    title: string
-    setTitle: any
+    title?: string
+    setTitle?: any
+    titleDrop: string
 }
 
 export function Rdrop(props: Dropdown) {
@@ -32,7 +33,7 @@ export function Rdrop(props: Dropdown) {
         <Button variant="outline">{props.title}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
-        <DropdownMenuLabel>Availible roles</DropdownMenuLabel>
+        <DropdownMenuLabel>{props.titleDrop}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
             {

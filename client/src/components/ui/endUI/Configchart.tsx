@@ -35,17 +35,17 @@ export function Chartconfig({hrshow, setHrshow, maon, setMaon, windowsize, setWi
     <DropdownMenuTrigger asChild>
       <Button variant="outline" 
        
-        >Configure chart</Button>
+        >تنظیمات نمودار</Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent className="w-full">
-      <DropdownMenuLabel>Basic config</DropdownMenuLabel>
+      <DropdownMenuLabel>تنظیمات ابتدایی</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuCheckboxItem
         checked={hrshow}
         onCheckedChange={setHrshow}
 
       >
-        raw HeartRate
+        ضربان قلب خام
       </DropdownMenuCheckboxItem>
       <DropdownMenuGroup className="flex flex-row justify-center">
       <DropdownMenuCheckboxItem
@@ -54,7 +54,7 @@ export function Chartconfig({hrshow, setHrshow, maon, setMaon, windowsize, setWi
 
         
       >
-        Moving average
+        میانگین متحرک
       </DropdownMenuCheckboxItem>
       <Input size={7} placeholder="Enter windowSize" value={windowsize} onChange={(e) => setWindowsize(e.target.value)} />
 
@@ -62,7 +62,7 @@ export function Chartconfig({hrshow, setHrshow, maon, setMaon, windowsize, setWi
     <DropdownMenuSeparator className="bg-gray-500"/>
     <DialogTrigger asChild>
         <DropdownMenuItem className="font-semibold rounded-md justify-center bg-slate-400 text-white">
-            user info
+            اطلاعات کاربر
         </DropdownMenuItem>
 
     </DialogTrigger>
@@ -73,11 +73,11 @@ export function Chartconfig({hrshow, setHrshow, maon, setMaon, windowsize, setWi
     <DialogContent>
         {
             !userid?
-                <div> first select user id</div>
+                <div> ابتدا یک آیدی انتخاب کنید</div>
             :
             <div className="space-y-2">
                 
-                <h1 className="Text-xl font-bold">Info for the user id : {userid}</h1>
+                <h1 className="Text-xl font-bold">اطلاعات برای این آیدی : {userid}</h1>
                 
                 <p>{(userid=='1461032677')?
                 `Hello Dr.shahab bohlooli!`

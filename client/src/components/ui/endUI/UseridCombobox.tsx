@@ -41,14 +41,14 @@ export function ComboboxDemo({userid, setUserid}:any) {
         >
           {userid
             ? ids.find((id) => id === userid)
-            : "select user id..."}
+            : "یوزر آیدی انتخاب کنید"}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search user id..." />
-          <CommandEmpty>No user id found</CommandEmpty>
+          <CommandInput placeholder="جست و جوی آید " />
+          <CommandEmpty>هیج آیدی یافت نشد</CommandEmpty>
           <CommandGroup>
             {ids.map((id, index) => (
               <CommandItem

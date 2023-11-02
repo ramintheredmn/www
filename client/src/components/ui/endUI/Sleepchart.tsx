@@ -10,6 +10,7 @@ const ECGPlot = ({ data, steps }: any) => {
   console.log(steps)
 
     if (!data || !data.timestamps || !data.sleepP) {
+      
         return <div className='mt-3 flex justify-center '>NO data in selected time interval for this user id</div>;
       }
     // Parse the combined data

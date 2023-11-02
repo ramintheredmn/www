@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/tabs"
 import { Rdrop } from "./withinnEndUI/Radiodropdown"
 import { Demograph } from "./withinnEndUI/Demodia"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+
 
 const roles = ['Patient', 'Doctor', 'Admin']
 
@@ -32,6 +33,9 @@ const info = {
 
 export function Tabbedcard({setSub, sub, setSeecontent}: {setSub: any, sub: any, setSeecontent:any}) {
 
+
+  
+
   const [logininfo, setLogininfo] = useState({
     useridLogin: '',
     password: '',
@@ -41,7 +45,24 @@ export function Tabbedcard({setSub, sub, setSeecontent}: {setSub: any, sub: any,
 
 
 
+
+
   const [title, setTitle] = useState('Choose one ...')
+
+
+  const [demograph, setDemograph] = useState({})
+
+  const [signupinfo, setSignupinfo] = useState({
+    role: '',
+    fullname: '',
+    id: '',
+    password: '',
+    demograph: {}
+  })
+
+  useEffect(()=>{
+    setSignupinfo({...signupinfo, demograph: demograph, role:title})
+  }, [demograph, title])
 
   const handlechange = (e:any) => {
     setLogininfo ({
@@ -49,30 +70,50 @@ export function Tabbedcard({setSub, sub, setSeecontent}: {setSub: any, sub: any,
       [e.target.id]: e.target.value
     })
   }
-  console.log(sub)
 
+  const [sSigninfo, setsSigninfo] = useState(null)
+
+ useEffect(()=>{
+
+  sSigninfo && fetch('/api/userinfo', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(sSigninfo),
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Success:', data);
+})
+.catch((error) => {
+  console.error('Error:', error);
+});
+
+
+ }, [sSigninfo])
   return (
     <Tabs defaultValue="login" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="login">Login</TabsTrigger>
-        <TabsTrigger value="sign">Sign up</TabsTrigger>
+        <TabsTrigger value="login">ورود</TabsTrigger>
+        <TabsTrigger value="sign">ثبت نام</TabsTrigger>
       </TabsList>
       <TabsContent value="login">
         <Card>
           <CardHeader>
-            <CardTitle>Login</CardTitle>
+            <CardTitle>ورود</CardTitle>
             <CardDescription>
-                Login to your account
+                به حساب خود وارد شوید
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
 
             <div className="space-y-1">
-              <Label htmlFor="useridLogin">userid</Label>
+              <Label htmlFor="useridLogin">یوزر ایدی</Label>
               <Input id="useridLogin" placeholder="Enter your user id" onChange={handlechange} />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="password">password</Label>
+              <Label htmlFor="password">رمز عبور</Label>
               <Input id="password" type="password" placeholder="by default the user id" onChange={handlechange}/>
             </div>
           </CardContent>
@@ -80,45 +121,50 @@ export function Tabbedcard({setSub, sub, setSeecontent}: {setSub: any, sub: any,
             <Button onClick={()=> (
               setSub({...logininfo},
               setSeecontent(true)
-              ))}>Login</Button>
+              ))}>ورود</Button>
           </CardFooter>
         </Card>
       </TabsContent>
       <TabsContent value="sign">
         <Card>
           <CardHeader>
-            <CardTitle>Sign up</CardTitle>
+            <CardTitle>ثبت نام</CardTitle>
             <CardDescription>
-              Please fill this forn carefully!
+              لطفا این فرم را با دقت پر کنید!
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
           <div className="flex flex-col space-y-1">
-              <Label htmlFor="role">Role</Label>
-              <Rdrop roles={roles} title={title} setTitle={setTitle}/>
+              <Label htmlFor="role">نقش</Label>
+              <Rdrop roles={roles} title={title} setTitle={setTitle} titleDrop={"نقش های در دسترس"}/>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="name">full name</Label>
-              <Input id="name" />
+              <Label htmlFor="fullname">نام و نام خانوادگی</Label>
+              <Input id="fullname" onChange={(e)=> setSignupinfo({...signupinfo, fullname: e.target.value})}/>
             </div>
             <div className="space-y-1">
-              <Label htmlFor="userid">user id</Label>
-              <p className=" font-extralight">Attention! this should match with the user id in the app for a patient</p>
-              <Input id="userid" type="number" maxLength={10} minLength={10} />
+              <Label htmlFor="id">یوزر آیدی</Label>
+              <p className=" font-extralight">دقت کنید که همان آیدی وارد شده در اپ موبایل را وارد کنید</p>
+              <Input id="id" type="number" maxLength={10} minLength={10} onChange={(e)=> setSignupinfo({...signupinfo, id: e.target.value})} />
             </div>
             <div className="space-y-1">
               <Label htmlFor="pass">password</Label>
-              <Input id="pass" type="password" />
+              <Input id="pass" type="password" onChange={(e)=> setSignupinfo({...signupinfo, password: e.target.value})}/>
             </div>
 
             <div className="flex flex-col space-y-2">
-              <Label htmlFor="pass">Demographic info</Label>
-              <Demograph vaz={title} />
+              <Label htmlFor="pass">اطلاعات دموگرافیک</Label>
+              <Demograph demograph={demograph} setDemograph={setDemograph} vaz={title} />
             </div>
             
           </CardContent>
           <CardFooter>
-            <Button>Submit</Button>
+            <Button
+              onClick={()=> {
+                setSignupinfo({...signupinfo, role: title})
+                setSignupinfo({...signupinfo, demograph: Object(demograph)})
+                setsSigninfo(signupinfo)}}
+            >Submit</Button>
           </CardFooter>
         </Card>
       </TabsContent>

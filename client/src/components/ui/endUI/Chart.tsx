@@ -6,6 +6,7 @@ export default function Chart(props: {
 	timestamp: number[];
 	ma :number[];
   show: boolean
+  loading: boolean;
 
   }) {
 
@@ -80,6 +81,7 @@ const [chartshow, setChartshow] = useState(true)
     {chartshow ?
   <ReactECharts option={option} style={{ height: innerHeight-250, width: '100%'  }} />
   :
+      !props.loading&&
       'No data in selected time interval for this user id'
   }
   </div> 

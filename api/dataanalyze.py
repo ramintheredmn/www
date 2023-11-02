@@ -1,5 +1,5 @@
 from api.database import engine
-from sqlalchemy import Column, Integer, String, DateTime, text, Text
+from sqlalchemy import Column, Integer, String, DateTime, text, Text, JSON
 from sqlalchemy.ext.declarative import declarative_base
 import numpy as np
 import pandas as pd
@@ -33,10 +33,19 @@ class MiBandActivitySample(Base):
     __tablename__ = 'MI_BAND_ACTIVITY_SAMPLE'
     
     id = Column(Integer, primary_key=True, autoincrement=True)  # Add autoincrement
-    USER_ID = Column(String(30), nullable=False)  # Change length to 30 and make non-nullable
+    USER_ID = Column(String(10), nullable=False)  # Change length to 30 and make non-nullable
     TIMESTAMP = Column(String(50), nullable=False)  # Change type to String and make non-nullable
     HEART_RATE = Column(String(30), nullable=False)  # Change type to String and make non-nullable
     STEPS = Column(String(30), nullable=True)
+
+class Userinfo(Base):
+    __tablename__ = 'USER_INFO'
+    
+    id = Column(Integer, primary_key=True, autoincrement=True)  # Matches the given schema
+    user_id = Column(String(10), nullable=False)  # Matches the given schema
+    user_info = Column(JSON, nullable=True)
+
+
 
 def distinct_userIdExtract_extract_from_table():  # function to extract userids from table
     
