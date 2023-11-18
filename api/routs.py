@@ -12,7 +12,6 @@ import math
 from api.sleepalgo import khiar, sleepstaging, binarysleep_with_denoise
 from api.info import infocal
 
-# from api.slllllllleeeeeep import sleepanalyse
 
 @app.route('/')
 def index():
@@ -24,48 +23,13 @@ def test_next():
 
     user_ids_ = distinct_userIdExtract_extract_from_table()
     user_ids = [user_id_a['USER_ID'] for user_id_a in user_ids_] # appending all the recevied usesr_ids into a list (raw data : {USER_ID : "..."} ---> this list :["....", "...."])
-    # api_key = request.headers.get('Authorization')
-    # if not api_key or api_key.split(" ")[1] != apiK:
-    #     abort(401)
+
     return jsonify({"user_ids" : user_ids})
 
 Session = sessionmaker(bind=engine)
 session_dta = Session()
 
-#def insert_table(data):
 
-
-
-# storing the post requests as dicts in data_ list
-  # ceating a list of recevied post requests
-    # {'UserID': '1234567890', 'HeartRates': 
-    # [{'TimeStamp': '1690495920', 'HeartRate': '82'},
-    #  {'TimeStamp': '1690496100', 'HeartRate': '62'}, 
-    # {'TimeStamp': '1690496160', 'HeartRate': '73'}, 
-    # {'TimeStamp': '1690496220', 'HeartRate': '72'}, 
-    # {'TimeStamp': '1690496280', 'HeartRate': '76'}, 
-    # {'TimeStamp': '1690496400', 'HeartRate': '70'}, 
-    # {'TimeStamp': '1690496460', 'HeartRate': '118'}, 
-    # {'TimeStamp': '1690496520', 'HeartRate': '84'}, 
-    # {'TimeStamp': '1690496580', 'HeartRate': '94'}, 
-    # {'TimeStamp': '1690496640', 'HeartRate': '102'}, 
-    # {'TimeStamp': '1690496700', 'HeartRate': '80'}, 
-    # {'TimeStamp': '1690496760', 'HeartRate': '63'}, 
-    # {'TimeStamp': '1690496820', 'HeartRate': '67'}, 
-    # {'TimeStamp': '1690496880', 'HeartRate': '66'}, 
-    # {'TimeStamp': '1690496940', 'HeartRate': '81'}, 
-    # {'TimeStamp': '1690497000', 'HeartRate': '68'}, 
-    # {'TimeStamp': '1690497060', 'HeartRate': '70'}, 
-    # {'TimeStamp': '1690497240', 'HeartRate': '70'}, 
-    # {'TimeStamp': '1690497480', 'HeartRate': '74'}, 
-    # {'TimeStamp': '1690497540', 'HeartRate': '72'}, 
-    # {'TimeStamp': '1690497600', 'HeartRate': '65'}, 
-    # {'TimeStamp': '1690497660', 'HeartRate': '64'}, 
-    # {'TimeStamp': '1690497780', 'HeartRate': '68'}, 
-    # {'TimeStamp': '1690497840', 'HeartRate': '67'}, 
-    # {'TimeStamp': '1690497900', 'HeartRate': '69'}]}
-
-    # this is the raw data that client sends
 
 @app.route('/receive', methods=['GET', 'POST'])
 def receive():
@@ -100,32 +64,7 @@ def receive():
         session_dta.rollback()
         return f'An error occurred while processing the data: {str(e)}', 500
     
-@app.route('/api/userinfo', methods=['GET', 'POST'])
-def userinfo():
-    try:
-        rec_data = request.get_json()
-        if rec_data:
-            print(rec_data)
-            data_ = [rec_data]
-        if not rec_data:
-            return 'No data received', 400
-        for info in data_:
-            user_id = info['id']
-            password = info['password']
-            role = info['role']
-            demograph = info['demograph']
 
-            existing_sample = session_dta.query(Userinfo).filter_by(user_id= user_id).first()
-
-            if existing_sample is None:
-                sample = Userinfo(user_id=user_id, user_info={'role': role, 'password': password, 'demograph': demograph})
-                session_dta.add(sample)
-        session_dta.commit()
-    except Exception as e:
-        print(str(e))
-        return f'An error occurred while processing the data: {str(e)}', 500
-
-    return {'message' : "data received successfully"}, 200
 
 
 
@@ -242,3 +181,49 @@ def steps(userid):
     return jsonify({"steps": steps, "timestamps": timestamps, "hourstep": step_agg, "hourtamp": step_agg_timestamps})
 
 
+@app.route('/api/recuserinfo', methods=['POST'])
+def user_infoo():
+    
+    try:
+        received_data = request.get_json()
+        print(received_data)
+        if not received_data:
+            return 'No data received', 400
+
+        data_ = [received_data]
+
+        for info in data_:
+            USER_ID = str(info['userid'])
+            NAME = info['username']
+            LASTNAME = info['lastname']
+            GENDER = 1 if info['type'] == "male" else 2 if info['type'] == 'female' else 3
+            DATEOFBIRTH = int((datetime.fromisoformat(str(info['dob']).rstrip("Z"))).timestamp() * 1000)
+            BLOODGROUP = info['bloodGroup']
+            WEIGHT = info['weight']
+            HEIGHT = info['height']
+            MEDICATIONS = info['medicines']
+            
+
+                
+            existing_sample = session_dta.query(MiBandActivitySample).filter_by(USER_ID=USER_ID).first()
+            print(DATEOFBIRTH)
+            if existing_sample is None:
+                sample = Userinfo(USER_ID=USER_ID, 
+                                    NAME = NAME,
+                                    LASTNAME = LASTNAME,
+                                    GENDER = GENDER,
+                                    DATEOFBIRTH = DATEOFBIRTH,
+                                    BLOODGROUP = BLOODGROUP,
+                                    WEIGHT = WEIGHT,
+                                    HEIGHT = HEIGHT,
+                                    MEDICATIONS = MEDICATIONS)
+                session_dta.add(sample)
+        
+        session_dta.commit()
+        return 'Data received', 200
+
+    except Exception as e:
+        print(e)
+        session_dta.rollback()
+        return f'An error occurred while processing the data: {str(e)}', 500
+    

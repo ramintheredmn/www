@@ -42,8 +42,15 @@ class Userinfo(Base):
     __tablename__ = 'USER_INFO'
     
     id = Column(Integer, primary_key=True, autoincrement=True)  # Matches the given schema
-    user_id = Column(String(10), nullable=False)  # Matches the given schema
-    user_info = Column(JSON, nullable=True)
+    USER_ID = Column(String(20), nullable=False)  # Matches the given schema
+    NAME = Column(String(100), nullable=False)
+    LASTNAME = Column(String(100), nullable=False)
+    GENDER = Column(Integer, nullable=False)
+    DATEOFBIRTH = Column(String(200), nullable=False)
+    BLOODGROUP = Column(Integer, nullable=True)
+    WEIGHT = Column(Integer, nullable=True)
+    HEIGHT = Column(Integer, nullable=True)
+    MEDICATIONS = Column(JSON, nullable=True)
 
 
 
