@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface TagInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  placeholder?: string;
+interface TagInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value'> {  placeholder?: string;
   tags: string[];
   setTags: React.Dispatch<React.SetStateAction<string[]>>;
+  value?: (string | null)[] | null;
 }
 
 const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {
