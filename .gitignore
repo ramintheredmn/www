@@ -6,6 +6,7 @@
 /.vscode-server
 /.keras
 /.vscode-server-insiders
+clinet/next.config.js
 # Byte-compiled / optimized / DLL files
 snap/
 yarn.lock
@@ -253,3 +254,4 @@ client/bun.lockb
 client/.bun/
 *lock*
 .vscode/settings.json
+client/next.config.js
