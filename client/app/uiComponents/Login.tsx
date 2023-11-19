@@ -51,6 +51,7 @@ export default function Login({isLogin, setIslogin}:LoginProps){
 
     return(
         <section className="grid place-content-center min-h-screen sm:w-screen">
+            
             {glt?
                 <span> این آیدی در دیتابیس وجود ندارد، وارد اپ نشده </span>
             :
@@ -62,6 +63,7 @@ export default function Login({isLogin, setIslogin}:LoginProps){
                 <CardContent className="space-y-2">
 
                     <div id="userid">
+
                         <Label className="font-bold">یوزر آیدی خود را وارد کنید</Label>
                         <Input ref={inputRef} placeholder="یوزر آيدی وارد شده در اپ"></Input>
                     </div>

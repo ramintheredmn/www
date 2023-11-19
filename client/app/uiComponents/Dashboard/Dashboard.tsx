@@ -24,7 +24,7 @@ export default function Dashboard() {
     return (
       <main>
         <Sidebar settab={setTab} tab={tab} /> 
-        <section className='fixed top-20 mb-2 right-20 bottom-10 w-11/12'> 
+        <section className=' absolute overflow-y-scroll top-20 mb-2 right-20 bottom-10 w-11/12'> 
         
         <div className=''>
 

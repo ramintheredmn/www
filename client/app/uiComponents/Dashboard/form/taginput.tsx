@@ -5,9 +5,9 @@ import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface TagInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value'> {  placeholder?: string;
-  tags: string[];
+  tags: string[]  ;
   setTags: React.Dispatch<React.SetStateAction<string[]>>;
-  value?: (string | null)[] | null;
+  value?: (string | null | undefined)[] | null | undefined;
 }
 
 const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>((props, ref) => {

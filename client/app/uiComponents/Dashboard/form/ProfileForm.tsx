@@ -88,7 +88,7 @@ const formSchema = z.object({
       required_error: 'نمیتواند خالی باشد'
     }),
 
-    medicines: z.string().nullable().array().nullable()
+    medicines: z.string().optional().array().optional()
   })
 
 
