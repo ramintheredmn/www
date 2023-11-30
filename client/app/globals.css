@@ -1,8 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
 
+
+
+@font-face {
+  font-family: 'Pinar-Black';
+  src: url('/Pinar-DS1-FD-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Pinar-Bold';
+  src: url('/Pinar-DS1-FD-Bold.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pinar-Light';
+  src: url('/Pinar-DS1-FD-Light.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Pinar-Regular';
+  src: url('/Pinar-DS1-FD-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -26,7 +52,7 @@
     --ring: 222.2 84% 4.9%;
     --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -50,7 +76,7 @@
   }
 }
 
- 
+
 @layer base {
   * {
     @apply border-border;

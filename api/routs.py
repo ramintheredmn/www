@@ -72,28 +72,42 @@ def receive():
 def get_heartrate(userid):
     
     try:
-        dt_start = int(request.args.get('startdate')) - 2.5*60*60
-        
-        dt_end = int(request.args.get('enddate')) -2.5*60*60
-        
+        STRrangedate = request.args.get('rangedate')
+        modifiedRangedatestr = STRrangedate[1:-1]
+        rangedate = str(modifiedRangedatestr).split(',')
+        print(rangedate, " | ", type(rangedate), len(rangedate))
+        if len(rangedate) == 2:
+
+            dt_start = math.floor(int(rangedate[0])/1000)
+
+            dt_end = math.floor(int(rangedate[1])/1000)
+        else:
+            return jsonify({"error" : "رنج وارد کنید"})        
         
         data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
         
+        if not data_dicts:
+            return jsonify({"error": "در این بازه زمانی داده ای وجود ندارد"})
         
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
 
     except Exception as e:
         return jsonify({"error" : str(e)}), 500
+        print(str(e))
 
     return jsonify({"heartrate": heart_rates, "timestamps": timestamps})
 
 
 @app.route('/api/latest_timestamp/<int:userid>')
 def lateTime(userid):
-     maxTimestamp, minTimestamp = get_latest_timestamp(userid)
+    try:
+        maxTimestamp, minTimestamp = get_latest_timestamp(userid)
+        print(maxTimestamp, minTimestamp)
+    except Exception as e:
+        print(str(e))
 
-     return jsonify({'maxTimestamp' : datetime.fromtimestamp(int(maxTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S'), 'minTimestamp': datetime.fromtimestamp(int(minTimestamp)+2.5*60*60).strftime('%Y-%m-%d %H:%M:%S')})
+    return jsonify({'maxTimestamp' : (int(maxTimestamp)) ,'minTimestamp': (int(minTimestamp))})
 
 
 @app.route('/api/windowsize/<int:userid>/<int:windowsize>')
@@ -205,7 +219,7 @@ def user_infoo():
             
 
                 
-            existing_sample = session_dta.query(MiBandActivitySample).filter_by(USER_ID=USER_ID).first()
+            existing_sample = session_dta.query(Userinfo).filter_by(USER_ID=USER_ID).first()
             print(DATEOFBIRTH)
             if existing_sample is None:
                 sample = Userinfo(USER_ID=USER_ID, 

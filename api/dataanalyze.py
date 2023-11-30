@@ -41,8 +41,8 @@ class MiBandActivitySample(Base):
 class Userinfo(Base):
     __tablename__ = 'USER_INFO'
     
-    id = Column(Integer, primary_key=True, autoincrement=True)  # Matches the given schema
-    USER_ID = Column(String(20), nullable=False)  # Matches the given schema
+    id = Column(Integer, primary_key=True, autoincrement=True)  
+    USER_ID = Column(String(20), nullable=False)  
     NAME = Column(String(100), nullable=False)
     LASTNAME = Column(String(100), nullable=False)
     GENDER = Column(Integer, nullable=False)

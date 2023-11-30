@@ -41,8 +41,8 @@ export default function Login({isLogin, setIslogin}:LoginProps){
         } else {
             setGlt(true)
         }
-        
-            
+
+
 
     }
     console.log(users)
@@ -51,32 +51,32 @@ export default function Login({isLogin, setIslogin}:LoginProps){
 
     return(
         <section className="grid place-content-center min-h-screen sm:w-screen">
-            
+
             {glt?
-                <span> این آیدی در دیتابیس وجود ندارد، وارد اپ نشده </span>
+                <span className="font-pinar-bl"> این آیدی در دیتابیس وجود ندارد، وارد اپ نشده </span>
             :
             <Card>
                 <CardHeader>
-                    <CardTitle>خوش آمدید</CardTitle>
-                    <CardDescription>لطفا وارد شوید</CardDescription>
+                    <CardTitle className="font-pinar-bl">خوش آمدید</CardTitle>
+                    <CardDescription className="font-pinar-re">لطفا وارد شوید</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
 
-                    <div id="userid">
+                    <div id="userid" className="space-y-2">
 
-                        <Label className="font-bold">یوزر آیدی خود را وارد کنید</Label>
-                        <Input ref={inputRef} placeholder="یوزر آيدی وارد شده در اپ"></Input>
+                        <Label className="font-pinar-re">یوزر آیدی خود را وارد کنید</Label>
+                        <Input ref={inputRef} className="font-pinar-li" placeholder="یوزر آيدی وارد شده در اپ"></Input>
                     </div>
-                    <div id="pass">
-                        <Label className="font-bold">گذرواژه خود را وارد کنید</Label>
-                        <Input placeholder="در ورود اول همان یوزر آیدی"></Input>
+                    <div id="pass" className="space-y-2">
+                        <Label className="font-pinar-re">گذرواژه خود را وارد کنید</Label>
+                        <Input className="font-pinar-li" placeholder="در ورود اول همان یوزر آیدی"></Input>
                     </div>
                 </CardContent>
-                <CardFooter className="flex flex-row justify-between gap-4">
-                    
+                <CardFooter className="font-pinar-re flex flex-row justify-between gap-4">
+
                     <Button className="font-extrabold text-xl text-justify bg-red-500"onClick={handleClicck}>ورود</Button>
                     <Button  className=" bg-gray-800 w-364">آیا مشکلی در ورودی دارید؟</Button>
-                    
+
                 </CardFooter>
             </Card>
 }

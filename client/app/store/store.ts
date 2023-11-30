@@ -15,8 +15,8 @@ interface T {
 }
 
 export const useStore = create<T>()((set)=> ({
-    isLogin: false,
-    userLogedin: '',
+    isLogin: true,
+    userLogedin: '1234567890',
     role: null,
     makeLogin: (l) => set(state => ({isLogin: true})),
     changeUserLogedin: (user_id) => set(state=> ({userLogedin: user_id})),

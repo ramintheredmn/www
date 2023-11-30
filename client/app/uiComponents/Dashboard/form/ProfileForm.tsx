@@ -67,9 +67,7 @@ const formSchema = z.object({
         message: "قامیلی شما باید حداقل سه حرف داشده باشد"
     }),
     userid: z.number().min(10, {
-        message: "یوزر آیدی باید حداقل ۱۰ عدد باشد",
-        
-        
+      message: "حداقل ۱۰ عدد"
     }),
     dob: z.date({
         required_error: "زمان تولد شما نیاز است ! ",
@@ -104,7 +102,7 @@ export default function UserForm() {
         },
       })
 
-      const [tags, setTags] = useState<string[]>([]);
+      const [tags, setTags] = useState<string[]>(["NO drug"]);
 
       const { setValue } = form;
 
@@ -123,9 +121,9 @@ export default function UserForm() {
 
     return(
 
-    <main className="flex flex-col items-center justify-center sm:w-screen lg:w-1/2">
+    <main className="">
     <Card className=" w-full">
-      <CardHeader>فرم مشخصات بیمار</CardHeader>
+      <CardHeader className="font-pinar-bo">فرم مشخصات بیمار</CardHeader>
       <div className="p-3">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 place-items-center justify-items-center gap-2">
@@ -134,12 +132,12 @@ export default function UserForm() {
               name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>نام</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="font-pinar-bo">نام</FormLabel>
+                  <FormDescription className="font-pinar-li">
                     نام خود را وارد کنید
                   </FormDescription>
                   <FormControl>
-                    <Input placeholder="نام" {...field} />
+                    <Input placeholder="نام" className="font-pinar-li" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -151,12 +149,12 @@ export default function UserForm() {
               name="lastname"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>نام خانوادگی</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="font-pinar-bo">نام خانوادگی</FormLabel>
+                  <FormDescription className="font-pinar-li">
                     نام خانوادگی خود را وارد کنید
                   </FormDescription>
                   <FormControl>
-                    <Input placeholder="نام خانوادگی" type='text' {...field} />
+                    <Input placeholder="نام خانوادگی"  className="font-pinar-li" type='text' {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -169,12 +167,12 @@ export default function UserForm() {
 
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>یوزر آیدی</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="font-pinar-bo">یوزر آیدی</FormLabel>
+                  <FormDescription className="font-pinar-li">
                     یوزر آیدی خود را وارد کنید
                   </FormDescription>
                   <FormControl>
-                    <Input placeholder="یوزر آیدی" type='text'  {...field} onChange={e => field.onChange(Number(e.target.value))} />
+                    <Input placeholder="یوزر آیدی" type='text'   className="font-pinar-li" {...field} onChange={e => field.onChange(Number(e.target.value))} />
                   </FormControl>
 
                   <FormMessage />
@@ -186,8 +184,8 @@ export default function UserForm() {
               name="dob"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>تولد</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="font-pinar-bo">تولد</FormLabel>
+                  <FormDescription className="font-pinar-li">
                     سالروز تولد خود را وارد کنید
                   </FormDescription>
                   <Popover>
@@ -196,7 +194,7 @@ export default function UserForm() {
                         <Button
                           variant={"outline"}
                           className={cn(
-                            "w-auto pl-3 text-left font-normal",
+                            "font-pinar-re",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -230,15 +228,15 @@ export default function UserForm() {
               name="type"
               render={({ field }) => (
                 <FormItem >
-                  <FormLabel>جنسیت</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="font-pinar-bo">جنسیت</FormLabel>
+                  <FormDescription className="font-pinar-li">
                     جنسیت خود را انتخاب کنید
                   </FormDescription>
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      className="flex flex-col space-y-1"
+                      className="flex font-pinar-re flex-col space-y-1"
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
@@ -274,8 +272,8 @@ export default function UserForm() {
               name="bloodGroup"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>گروه خونی</FormLabel>
-                  <FormDescription>گروه خونی خود را انتخاب کنید</FormDescription>
+                  <FormLabel className="font-pinar-bo">گروه خونی</FormLabel>
+                  <FormDescription className="font-pinar-li">گروه خونی خود را انتخاب کنید</FormDescription>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -283,7 +281,7 @@ export default function UserForm() {
                           variant="outline"
                           role="combobox"
                           className={cn(
-                            "w-[200px] justify-between",
+                            "font-pinar-re justify-between",
                             !field.value && "text-muted-foreground"
                           )}
                         >
@@ -333,12 +331,12 @@ export default function UserForm() {
               name="weight"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>وزن</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="font-pinar-bo">وزن</FormLabel>
+                  <FormDescription className="font-pinar-li">
                     وزن خود را در واحد کیلوگرم وارد کنید
                   </FormDescription>
                   <FormControl>
-                    <Input placeholder="کیلوگرم ... " type='number' {...field} onChange={e=> field.onChange(Number(e.target.value))} />
+                    <Input placeholder="کیلوگرم ... " type='number' {...field}  className="font-pinar-li" onChange={e=> field.onChange(Number(e.target.value))} />
                   </FormControl>
 
                   <FormMessage />
@@ -350,12 +348,12 @@ export default function UserForm() {
               name="height"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>قد</FormLabel>
-                  <FormDescription>
+                  <FormLabel className="font-pinar-bo">قد</FormLabel>
+                  <FormDescription className="font-pinar-li">
                     قد خود را در واحد سانتی متر وارد کنید
                   </FormDescription>
                   <FormControl>
-                    <Input placeholder="... سانتی میتر" type='number' {...field} onChange={e=> field.onChange(Number(e.target.value))} />
+                    <Input placeholder="... سانتی میتر" type='number'  className="font-pinar-li" {...field} onChange={e=> field.onChange(Number(e.target.value))} />
                   </FormControl>
 
                   <FormMessage />
@@ -368,14 +366,14 @@ export default function UserForm() {
               name="medicines"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>داروها </FormLabel>
+                  <FormLabel className="font-pinar-bo">داروها </FormLabel>
 
                   <FormControl>
                     <TagInput
                       {...field}
                       placeholder="نام دارو ... "
                       tags={tags}
-                      className="w-32"
+                      className="font-pinar-re"
                       setTags={(newTags) => {
                         setTags(newTags);
                         setValue("medicines", newTags as [string, ...string[]]);

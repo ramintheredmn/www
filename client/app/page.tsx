@@ -6,39 +6,28 @@ import Login from './uiComponents/Login'
 import {useStore} from './store/store'
 import Dashboard from './uiComponents/Dashboard/Dashboard'
 import Navbar from './uiComponents/Navbar'
-function Main () {
-  const {userLogedin} = useStore((state) => state)
-  //console.log(userLogedin)
-  return(
-    <section className='flex flex-row'>
-      <Dashboard />
-      
-      
-    </section>
-  )
 
-}
 
 export default function Home() {
 
   const {isLogin, makeLogin} = useStore((state)=>state)
   return (
-    <section className=''>
-    <div><Navbar/></div>
+    <section className='flex flex-col'>
+    <div className='sticky top-0 left-0 w-full z-50'><Navbar/></div>
 
-    <main dir='rtl' className='pt-20 w-screen min-h-screen'>
-      
+    <main dir='rtl' className='flex-shrink'>
 
-      {!isLogin?  
-      
+
+      {!isLogin?
+
       <Login isLogin={isLogin} setIslogin={makeLogin}/>
-      
-      :
 
-      <Main/>
+      :
+        <section className='p-24'><Dashboard/></section>
+     
       }
 
- 
+
 
     </main>
     </section>

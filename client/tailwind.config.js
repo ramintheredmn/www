@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -8,6 +9,7 @@ module.exports = {
     './src/**/*.{ts,tsx}',
 	],
   theme: {
+
     container: {
       center: true,
       padding: "2rem",
@@ -16,7 +18,15 @@ module.exports = {
       },
     },
     extend: {
-      colors: {
+
+      fontFamily:{
+          'pinar-bl': ['Pinar-Black', 'serif'],
+          'pinar-bo': ['Pinar-Bold', 'serif'],
+          'pinar-li': ['Pinar-Light', 'serif'],
+          'pinar-re': ['Pinar-Regular', 'serif']
+
+      },
+        colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
