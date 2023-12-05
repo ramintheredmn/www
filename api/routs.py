@@ -107,7 +107,7 @@ def lateTime(userid):
     except Exception as e:
         print(str(e))
 
-    return jsonify({'maxTimestamp' : (int(maxTimestamp)) ,'minTimestamp': (int(minTimestamp))})
+    return jsonify({'maxTimestamp' : (int(maxTimestamp)*1000) ,'minTimestamp': (int(minTimestamp)*1000)})
 
 
 @app.route('/api/windowsize/<int:userid>/<int:windowsize>')

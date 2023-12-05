@@ -28,10 +28,17 @@ moment.loadPersian({dialect:'persian-modern',  usePersianDigits: true });
 export default function RawheartChart() {
   const {userLogedin, fetcher} = useStore((state)=> state)
   const [windowWidth, setWindowWidth] = react.useState(window.innerWidth);
+  const [avalibleDates, setAvailibleDates] = react.useState(null!)
+  react.useEffect(()=> {
+    fetch(`/api/latest_timestamp/${userLogedin}`)
+      .then(res=> res.json())
+      .then(data => setAvailibleDates(data))
+  }, [])
   
-  const [windowHeight, setWindowHeight] = react.useState(window.innerHeight);
   const [value, setValue] = react.useState([
-    new DateObject()
+    new DateObject(),
+    new DateObject().subtract(1, 'days')
+
   ])
 
 
@@ -54,25 +61,6 @@ export default function RawheartChart() {
 
   // Adjust chart width based on the window width
   const chartWidth = windowWidth * 75/100 - 150;
-  
-  // height controll
-
-  react.useEffect(() => {
-    // Function to handle window resize
-    function handleResize() {
-      setWindowHeight(window.innerWidth);
-    }
-
-    // Add event listener
-    window.addEventListener('resize', handleResize);
-
-    // Remove event listener on cleanup
-    return () => window.removeEventListener('resize', handleResize);
-  }, []); // Empty array ensures this runs once on mount
-
-  // Adjust chart width based on the window width
-  const chartHeight = (windowWidth< 1100)? windowHeight * 75/100 - 350: (windowWidth<800)? windowHeight * 75/100 - 50: windowHeight*75/100 - 250;
-  
   
   const options = {
     chart: {
@@ -111,23 +99,28 @@ export default function RawheartChart() {
     
     <main className='flex flex-col items-center justify-center font-pinar-re relative'>
 
-      <Card className='w-11/12 flex items-center justify-center'>
-        <CardContent>
           
-        <div className='w-full flex-grow'>{error? <div> خطایی رخ داد </div>: isLoading? <div>در حال بارگذاری </div> :<Chart options={options} series={series} width={chartWidth} height={chartHeight} />}</div>
-        </CardContent>
-       
-        
-      </Card>
+      <div className=''>{error? <div> خطایی رخ داد </div>: isLoading? <div>در حال بارگذاری </div> :<Chart options={options} series={series} width={chartWidth} height={500} />}</div>
+
       <Card className='w-1/2 '>
-       <CardContent className='flex flex-col items-center justify-center space-y-3'>
+       <CardContent className='p-4 flex flex-col items-center justify-center space-y-3'>
       <h1 className='font-pinar-bl text-2xl'>تنظیمات نمودار </h1>
       {data?.error && 
       <p className='text-xl font-pinar-bo text-red-700'> {JSON.stringify(data.error)}</p>
       
       }
       {data?.error && 
-        <p>در صورت نیاز به انتخاب یک روز، روی آن روز دوبار بزنید <br></br> تا به عنوان بازه ثبت شود</p>
+        <p> این کابر فقط از تاریخ 
+        {moment(avalibleDates?.minTimestamp).format('jYYYY/jM/jD')}
+      تا     
+        {moment(avalibleDates?.maxTimestamp).format('jYYYY/jM/jD')}
+  
+      داده دارد .  
+        </p>
+        
+        }
+      {data?.error && 
+        <p>در صورت نیاز به انتخاب یک روز، روی آن روز دوبار بزنید تا به عنوان بازه ثبت شود</p>
       
       }
         <div className="flex flex-row" style={ {direction:"rtl"}}>
