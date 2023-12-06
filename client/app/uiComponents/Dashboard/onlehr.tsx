@@ -1,8 +1,8 @@
 'use client'
+import dynamic from 'next/dynamic'
 import * as react from 'react'
 import useSWR from 'swr'
 import { useStore } from '../../store/store'
-import Chart from 'react-apexcharts'
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import { Type } from 'lucide-react'
 import { ApexOptions } from 'apexcharts'
 // Set moment to use the Jalaali calendar
 moment.loadPersian({dialect:'persian-modern',  usePersianDigits: true });
-
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 
 
