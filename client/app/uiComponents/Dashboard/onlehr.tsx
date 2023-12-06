@@ -18,7 +18,9 @@ import DatePicker from 'react-multi-date-picker'
 import persian from "react-date-object/calendars/persian"
 import persian_fa from "react-date-object/locales/persian_fa"
 import { DateObject } from 'react-multi-date-picker'
+import axios from 'axios'
 import { Type } from 'lucide-react'
+import { ApexOptions } from 'apexcharts'
 // Set moment to use the Jalaali calendar
 moment.loadPersian({dialect:'persian-modern',  usePersianDigits: true });
 
@@ -41,11 +43,18 @@ export default function RawheartChart() {
       .then(data => setAvailibleDates(data))
   }, [])
   
-  const [value, setValue] = react.useState([
+  const [value, setValue] = react.useState<DateObject[]>([
     new DateObject(),
     new DateObject().subtract(1, 'days')
 
   ])
+
+  const handlechange = (date: DateObject | DateObject[] | null) => {
+    if (Array.isArray(date)) {
+      setValue(date)
+    }
+  }
+
 
 
   console.log(JSON.stringify(value), typeof(value))
@@ -56,6 +65,8 @@ export default function RawheartChart() {
   interface heartData {
     timestamps : number[],
     heartrate: number[]
+    error? : any,
+    isLoading?: any
   }
 
 
@@ -77,11 +88,14 @@ export default function RawheartChart() {
   // Adjust chart width based on the window width
   const chartWidth = windowWidth * 75/100 - 150;
   
-  const options = {
+    const options: ApexOptions = {
+    
+    
     chart: {
       locales: [fa],
       defaultLocale: 'fa',
     },
+
     xaxis: {
       type: 'datetime',
       labels: {
@@ -100,10 +114,16 @@ export default function RawheartChart() {
   
       }
   }
-  const series = [
+  const series: ApexAxisChartSeries | ApexNonAxisChartSeries = [
     {
       name: "series-1",
-      data: data?.timestamps?.map((v,i) => [Number(v)*1000, Number(data?.heartrate[i])])
+      data: data?.timestamps?.map((v,i) => {
+
+          return{
+            x: Number(v) * 1000,
+            y: data?.heartrate[i]
+          }
+      }) || []
     },
 
   ];
@@ -146,7 +166,7 @@ export default function RawheartChart() {
             range
             rangeHover
             value={value}
-            onChange={setValue}
+            onChange={handlechange}
             locale={persian_fa}
             calendarPosition="bottom-right"
           

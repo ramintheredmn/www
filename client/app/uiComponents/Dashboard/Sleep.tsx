@@ -20,6 +20,7 @@ import persian_fa from "react-date-object/locales/persian_fa"
 import { DateObject } from 'react-multi-date-picker'
 import { Type } from 'lucide-react'
 // Set moment to use the Jalaali calendar
+import { ApexOptions } from 'apexcharts'
 moment.loadPersian({dialect:'persian-modern',  usePersianDigits: true });
 
 
@@ -40,11 +41,17 @@ export default function Sleep(){
       .then(data => setAvailibleDates(data))
   }, [userLogedin])
   
-  const [value, setValue] = react.useState([
+  const [value, setValue] = react.useState<DateObject[]>([
     new DateObject(),
     new DateObject().subtract(1, 'days')
 
   ])
+  const handleDateChange = (date: DateObject | DateObject[] | null) => {
+  // Assuming you want to set the state only when `date` is not null and is an array
+  if (Array.isArray(date)) {
+    setValue(date);
+  }
+};
 
 
   console.log(JSON.stringify(value), typeof(value))
@@ -54,6 +61,8 @@ export default function Sleep(){
     timestamps: number[],
     sleepP: number[],
     sleepB: number[]
+    error?: any,
+    isLoading?: any
   }
   const {data, error, isLoading} = useSWR<sleepdata>(userLogedin? `/api/sleep/${userLogedin}?rangedate=${JSON.stringify(value)}`: null, fetcher) 
   
@@ -77,7 +86,7 @@ export default function Sleep(){
   // Adjust chart width based on the window width
   const chartWidth = windowWidth * 75/100 - 150;
   
-  const options = {
+  const options: ApexOptions = {
     
     
     chart: {
@@ -106,11 +115,16 @@ export default function Sleep(){
   
       }
   }
-  const series = [
+  const series: ApexAxisChartSeries | ApexNonAxisChartSeries = [
     {
       name: "series-1",
       type: 'area',
-      data: timestamps?.map((v,i) => [Number(v)*1000, Number(sleepP && sleepP[i]).toFixed(2)])
+      data: timestamps?.map((v,i) => {
+        return{
+          x: Number(v) * 1000,
+          y: sleepP ? parseFloat(sleepP[i].toFixed(2)) : 0
+        }
+      }) || []
     },
 
   ];
@@ -119,7 +133,7 @@ export default function Sleep(){
     return (
     
     <main className='flex flex-col items-center justify-center font-pinar-re relative'>
-
+  
           
       <div className=''>{error? <div> خطایی رخ داد </div>: isLoading? <div>در حال بارگذاری </div> :<Chart options={options} series={series} width={chartWidth} height={500} />}</div>
 
@@ -142,7 +156,7 @@ export default function Sleep(){
             range
             rangeHover
             value={value}
-            onChange={setValue}
+            onChange={handleDateChange}
             locale={persian_fa}
             calendarPosition="bottom-right"
           
