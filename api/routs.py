@@ -113,9 +113,22 @@ def lateTime(userid):
 @app.route('/api/windowsize/<int:userid>/<int:windowsize>')
 def getMa(windowsize, userid):
     try:
-        dt_start = int(request.args.get('startdate')) - 2.5*60*60
-        dt_end = int(request.args.get('enddate')) -2.5*60*60
+        STRrangedate = request.args.get('rangedate')
+        modifiedRangedatestr = STRrangedate[1:-1]
+        rangedate = str(modifiedRangedatestr).split(',')
+        print(rangedate, " | ", type(rangedate), len(rangedate))
+        if len(rangedate) == 2:
+
+            dt_start = math.floor(int(rangedate[0])/1000)
+
+            dt_end = math.floor(int(rangedate[1])/1000)
+        else:
+            return jsonify({"error" : "رنج وارد کنید"})        
+        
         data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
+        if not data_dicts:
+            return jsonify({"error": "در این بازه زمانی داده ای وجود ندارد"})
+
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         heart_rates = [data['HEART_RATE'] for data in data_dicts]
 
@@ -131,9 +144,21 @@ def getMa(windowsize, userid):
 def sleep(userid):
     try:
 
-        dt_start = int(request.args.get('startdate')) - 2.5*60*60
-        dt_end = int(request.args.get('enddate')) -2.5*60*60
+        STRrangedate = request.args.get('rangedate')
+        modifiedRangedatestr = STRrangedate[1:-1]
+        rangedate = str(modifiedRangedatestr).split(',')
+        print(rangedate, " | ", type(rangedate), len(rangedate))
+        if len(rangedate) == 2:
+
+            dt_start = math.floor(int(rangedate[0])/1000)
+
+            dt_end = math.floor(int(rangedate[1])/1000)
+        else:
+            return jsonify({"error" : "رنج وارد کنید"})        
+        
         data_dicts = extract_selected_userid_data_withDates(userid, dt_start, dt_end)
+        if not data_dicts:
+            return jsonify({"error": "در این بازه زمانی داده ای وجود ندارد"})
         timestamps = [(int(data['TIMESTAMP'])) for data in data_dicts]
         steps = [int(data['STEPS']) for data in data_dicts]
         heart_rates = [int(data['HEART_RATE']) for data in data_dicts]

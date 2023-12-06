@@ -1,4 +1,5 @@
 'use client'
+import Sleep from './Sleep';
 import Sidebar from './sidebar'
 import { useState, lazy, Suspense } from 'react'
 const Userpage = lazy(() => import('./Userpage'));
@@ -15,7 +16,7 @@ export default function Dashboard() {
         case 1:
           return <Chart />;
         case 2:
-          return <div>فعالیت و خواب</div>;
+          return <div><Sleep/></div>;
         case 3:
           return <div>تماس با ما</div>;
         default:
