@@ -10,7 +10,7 @@ interface T {
     changeUserLogedin: (user_id: string) => void
     role: Number | null
     changeRole: (role: number) => void
-    fetcher: (u: string|null)=> void
+    fetcher: <DataType>(u: string|null)=> Promise<DataType>
 
 }
 
@@ -21,8 +21,14 @@ export const useStore = create<T>()((set)=> ({
     makeLogin: (l) => set(state => ({isLogin: true})),
     changeUserLogedin: (user_id) => set(state=> ({userLogedin: user_id})),
     changeRole: (n) => set(state => ({role: Number(n)})),
-    fetcher : (url: any ) => axios.get(url).then(res => res.data)
-
+    fetcher: <DataType>(url: string| null): Promise<DataType> => {
+        if (!url) {
+        // Handle the case where URL is null or undefined
+        
+        throw new Error("URL is null or undefined");
+        }
+        return axios.get(url).then(res => res.data);
+  }
 
 
 }))

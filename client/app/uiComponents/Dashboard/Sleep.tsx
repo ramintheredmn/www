@@ -50,11 +50,16 @@ export default function Sleep(){
   console.log(JSON.stringify(value), typeof(value))
   // get sleep data, and parse the received data into its parts
 
-
-  const {data, error, isLoading} = useSWR(userLogedin? `/api/sleep/${userLogedin}?rangedate=${JSON.stringify(value)}`: null, fetcher) 
-  const timestamps:Number[] = data?.timestamps;
-  const sleepP:Number[] = data?.sleepP;
-  const sleepB: Number[] = data?.sleepB;
+  interface sleepdata {
+    timestamps: number[],
+    sleepP: number[],
+    sleepB: number[]
+  }
+  const {data, error, isLoading} = useSWR<sleepdata>(userLogedin? `/api/sleep/${userLogedin}?rangedate=${JSON.stringify(value)}`: null, fetcher) 
+  
+  const timestamps = data?.timestamps;
+  const sleepP = data?.sleepP;
+  const sleepB = data?.sleepB;
   //const {data: stepData, error: stepError, isLoading: stepLoading} = useSWR(userLogedin? ``)
   react.useEffect(() => {
     // Function to handle window resize
@@ -86,7 +91,7 @@ export default function Sleep(){
     xaxis: {
       type: 'datetime',
       labels: {
-      formatter: function (value) {
+      formatter: function (value: any) {
         // Convert the timestamp to a Jalaali date string
         return moment(value).format('jYYYY/jM/jD HH:mm');
       }
@@ -105,7 +110,7 @@ export default function Sleep(){
     {
       name: "series-1",
       type: 'area',
-      data: timestamps?.map((v,i) => [Number(v)*1000, Number(sleepP[i]).toFixed(2)])
+      data: timestamps?.map((v,i) => [Number(v)*1000, Number(sleepP && sleepP[i]).toFixed(2)])
     },
 
   ];

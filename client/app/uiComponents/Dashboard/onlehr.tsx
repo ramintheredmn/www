@@ -28,7 +28,13 @@ moment.loadPersian({dialect:'persian-modern',  usePersianDigits: true });
 export default function RawheartChart() {
   const {userLogedin, fetcher} = useStore((state)=> state)
   const [windowWidth, setWindowWidth] = react.useState(window.innerWidth);
-  const [avalibleDates, setAvailibleDates] = react.useState(null!)
+  //interface for min and max data type assertion
+
+  interface datedata {
+    minTimestamp: number,
+    maxTimestamp: number
+  }
+  const [avalibleDates, setAvailibleDates] = react.useState<datedata>(null!)
   react.useEffect(()=> {
     fetch(`/api/latest_timestamp/${userLogedin}`)
       .then(res=> res.json())
@@ -44,7 +50,16 @@ export default function RawheartChart() {
 
   console.log(JSON.stringify(value), typeof(value))
 
-  const {data, error, isLoading} = useSWR(userLogedin? `/api/heartrate/${userLogedin}?rangedate=${JSON.stringify(value)}`: null, fetcher) 
+
+  // interface for type assertion
+
+  interface heartData {
+    timestamps : number[],
+    heartrate: number[]
+  }
+
+
+  const {data, error, isLoading} = useSWR<heartData>(userLogedin? `/api/heartrate/${userLogedin}?rangedate=${JSON.stringify(value)}`: null, fetcher) 
 
   react.useEffect(() => {
     // Function to handle window resize
@@ -70,7 +85,7 @@ export default function RawheartChart() {
     xaxis: {
       type: 'datetime',
       labels: {
-      formatter: function (value) {
+      formatter: function (value: any) {
         // Convert the timestamp to a Jalaali date string
         return moment(value).format('jYYYY/jM/jD HH:mm');
       }
