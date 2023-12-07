@@ -1,9 +1,16 @@
 'use client'
-import Sleep from './Sleep';
+//import { Heartchart } from './Charts';
+//import Sleep from './Sleep';
 import Sidebar from './sidebar'
 import { useState, lazy, Suspense } from 'react'
+//import Sleep from './Charts';
+//import { Heartchart } from './Charts';
 const Userpage = lazy(() => import('./Userpage'));
-const Chart = lazy(() => import('./onlehr'));
+const HeartChart = lazy(() => import('./HeartRateCharts'));
+const SleepChart = lazy(() => import('./SleepCharts'));
+
+
+
 //import RawheartChart from './onlehr';
 
 export default function Dashboard() {
@@ -14,9 +21,9 @@ export default function Dashboard() {
     
           return <Userpage />;
         case 1:
-          return <Chart />;
+          return <div><HeartChart/></div>;
         case 2:
-          return <div><Sleep/></div>;
+          return <div><SleepChart/></div>;
         case 3:
           return <div>تماس با ما</div>;
         default:
