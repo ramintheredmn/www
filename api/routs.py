@@ -12,7 +12,7 @@ import math
 from api.sleepalgo import khiar, sleepstaging, binarysleep_with_denoise
 from api.info import infocal
 
-
+# this is with neovim git
 @app.route('/')
 def index():
 	return app.send_static_file('index.html')
