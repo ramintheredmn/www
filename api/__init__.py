@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 
-
+# set static folder the build folder of next-build to serve files from that
 app = Flask(__name__, static_folder='../client/out', static_url_path='/')
 CORS(app)
 
@@ -11,5 +11,4 @@ apiK = "salamp123salamp"
 
 
 
-from api import routs
 

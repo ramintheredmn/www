@@ -1,9 +1,9 @@
 "use client";
-
 import Login from "./uiComponents/Login";
 import { useStore } from "./store/store";
 import Dashboard from "./uiComponents/Dashboard/Dashboard";
 import Navbar from "./uiComponents/Navbar";
+
 
 export default function Home() {
   const { isLogin, makeLogin } = useStore((state) => state);
@@ -25,3 +25,4 @@ export default function Home() {
     </section>
   );
 }
+
